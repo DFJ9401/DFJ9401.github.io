@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+
+<head>
+  <meta name="generator" content="Hexo 6.3.0">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.19.0">
+  <meta charset="utf-8">
+  
+
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  <link rel='dns-prefetch' href='https://gcore.jsdelivr.net'>
+  <link rel="preconnect" href="https://gcore.jsdelivr.net" crossorigin>
+  <link rel='dns-prefetch' href='//unpkg.com'>
+
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" content="#f8f8f8">
+  
+  <title>图书数据可视化 - S of S of S</title>
+
+  
+    <meta name="description" content="1 数据集介绍使用上次清洗过的数据进行数据分析，并利用可视化图形对分析。数据集共9个字段，600个样本，如下：  价格 星级 评论数	 作者	 出版日期	 出版社	 书名 简介1	 简介2  2 数据读取2.1 导入相关的库12345678#import pandas as pdimport seaborn as snsimport matplotlib.pyplot as pltimport j">
+<meta property="og:type" content="article">
+<meta property="og:title" content="图书数据可视化">
+<meta property="og:url" content="https://dfj9401.github.io/2023/08/30/%E5%9B%BE%E4%B9%A6%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96/index.html">
+<meta property="og:site_name" content="S of S of S">
+<meta property="og:description" content="1 数据集介绍使用上次清洗过的数据进行数据分析，并利用可视化图形对分析。数据集共9个字段，600个样本，如下：  价格 星级 评论数	 作者	 出版日期	 出版社	 书名 简介1	 简介2  2 数据读取2.1 导入相关的库12345678#import pandas as pdimport seaborn as snsimport matplotlib.pyplot as pltimport j">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-08-29T21:54:47.000Z">
+<meta property="article:modified_time" content="2023-08-29T22:48:30.995Z">
+<meta property="article:author" content="lub">
+<meta name="twitter:card" content="summary">
+  
+  
+  
+  
+
+  <!-- feed -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/main.css">
+
+  
+
+  
+
+  
+
+  
+
+
+  
+</head>
+
+<body>
+  
+
+
+
+
+  <div class='l_body' id='start'>
+    <aside class='l_left' layout='post'>
+    
+
+  
+
+<header class="header"><div class="logo-wrap"><a class="title" href="/"><div class="main" ff="title">S of S of S</div><div class="sub normal cap">学习记录</div><div class="sub hover cap" style="opacity:0"> 生活记录</div></a></div>
+
+<nav class="menu dis-select"></nav>
+</header>
+
+
+<div class="widgets">
+<widget class="widget-wrapper search"><div class="widget-body"><div class="search-wrapper" id="search"><form class="search-form"><input type="text" class="search-input" id="search-input" data-filter="/blog/" placeholder="文章搜索"><svg t="1670596976048" class="icon search-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2676" width="200" height="200"><path d="M938.2 832.6L723.8 618.1c-2.5-2.5-5.3-4.4-7.9-6.4 36.2-55.6 57.3-121.8 57.3-193.1C773.3 222.8 614.6 64 418.7 64S64 222.8 64 418.6c0 195.9 158.8 354.6 354.6 354.6 71.3 0 137.5-21.2 193.2-57.4 2 2.7 3.9 5.4 6.3 7.8L832.5 938c14.6 14.6 33.7 21.9 52.8 21.9 19.1 0 38.2-7.3 52.8-21.8 29.2-29.1 29.2-76.4 0.1-105.5M418.7 661.3C284.9 661.3 176 552.4 176 418.6 176 284.9 284.9 176 418.7 176c133.8 0 242.6 108.9 242.6 242.7 0 133.7-108.9 242.6-242.6 242.6" p-id="2677"></path></svg></form><div id="search-result"></div><div class="search-no-result">没有找到内容！</div></div></div></widget>
+
+
+<widget class="widget-wrapper toc single" id="data-toc"><div class="widget-header cap dis-select"><span class="name">图书数据可视化</span></div><div class="widget-body fs14"><div class="doc-tree active"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D"><span class="toc-text">1 数据集介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%95%B0%E6%8D%AE%E8%AF%BB%E5%8F%96"><span class="toc-text">2 数据读取</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E5%AF%BC%E5%85%A5%E7%9B%B8%E5%85%B3%E7%9A%84%E5%BA%93"><span class="toc-text">2.1 导入相关的库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E6%95%B0%E6%8D%AE%E8%AF%BB%E5%8F%96"><span class="toc-text">2.2 数据读取</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E5%AD%97%E6%AE%B5%E5%9F%BA%E6%9C%AC%E7%BB%9F%E8%AE%A1%E4%BF%A1%E6%81%AF"><span class="toc-text">2.3 字段基本统计信息</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="toc-text">3 可视化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E5%90%84%E5%87%BA%E7%89%88%E7%A4%BE%E7%9A%84%E5%9B%BE%E4%B9%A6%E6%95%B0%E9%87%8F"><span class="toc-text">3.1 各出版社的图书数量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E5%90%84%E6%98%9F%E7%BA%A7%E5%9B%BE%E4%B9%A6%E6%95%B0%E9%87%8F%E7%BB%9F%E8%AE%A1%E6%9F%B1%E7%8A%B6%E5%9B%BE"><span class="toc-text">3.2 各星级图书数量统计柱状图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E5%9B%BE%E4%B9%A6%E4%BB%B7%E6%A0%BC%E7%9B%B4%E6%96%B9%E5%9B%BE"><span class="toc-text">3.3 图书价格直方图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E9%AB%98%E4%BB%B7%E5%9B%BE%E4%B9%A6%E5%88%86%E6%9E%90"><span class="toc-text">3.4 高价图书分析</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-4-1%E9%AB%98%E4%BB%B7%E4%B9%A6%E5%87%BA%E7%89%88%E7%A4%BE%E7%BB%9F%E8%AE%A1"><span class="toc-text">3.4.1高价书出版社统计</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-4-2-%E9%AB%98%E4%BB%B7%E4%B9%A6%E6%98%9F%E7%BA%A7%E8%AF%84%E5%AE%9A"><span class="toc-text">3.4.2 高价书星级评定</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-%E5%90%84%E5%87%BA%E7%89%88%E7%A4%BE%E5%9B%BE%E4%B9%A6%E4%BB%B7%E6%A0%BC%E5%9D%87%E5%80%BC"><span class="toc-text">3.5 各出版社图书价格均值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-%E5%90%84%E5%87%BA%E7%89%88%E7%A4%BE%E5%87%BA%E7%89%88%E5%9B%BE%E4%B9%A6%E5%8F%A3%E7%A2%91%E5%88%86%E6%9E%90"><span class="toc-text">3.6 各出版社出版图书口碑分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-7-%E5%9B%BE%E4%B9%A6%E7%AE%80%E4%BB%8B%E6%96%87%E6%9C%AC%E5%88%86%E8%AF%8D"><span class="toc-text">3.7 图书简介文本分词</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-8-%E8%AF%8D%E4%BA%91%E5%9B%BE"><span class="toc-text">3.8 词云图</span></a></li></ol></li></ol></div></div></widget>
+
+
+
+
+</div>
+
+
+    </aside>
+    <div class='l_main'>
+      
+
+      
+
+
+
+<div class="bread-nav fs12"><div id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a><span class="sep"></span><a class="cap breadcrumb" href="/">文章</a></div><div id="post-meta">发布于&nbsp;<time datetime="2023-08-29T21:54:47.000Z">2023-08-30</time></div></div>
+
+<article class='md-text content post'>
+<h1 class="article-title"><span>图书数据可视化</span></h1>
+<h2 id="1-数据集介绍"><a href="#1-数据集介绍" class="headerlink" title="1 数据集介绍"></a>1 数据集介绍</h2><p>使用上次清洗过的数据进行数据分析，并利用可视化图形对分析。<br>数据集共9个字段，600个样本，如下：</p>
+<ul>
+<li>价格</li>
+<li>星级</li>
+<li>评论数	</li>
+<li>作者	</li>
+<li>出版日期	</li>
+<li>出版社	</li>
+<li>书名</li>
+<li>简介1	</li>
+<li>简介2</li>
+</ul>
+<h2 id="2-数据读取"><a href="#2-数据读取" class="headerlink" title="2 数据读取"></a>2 数据读取</h2><h3 id="2-1-导入相关的库"><a href="#2-1-导入相关的库" class="headerlink" title="2.1 导入相关的库"></a>2.1 导入相关的库</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#import pandas as pd</span></span><br><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> jieba</span><br><span class="line"><span class="keyword">from</span> wordcloud <span class="keyword">import</span> WordCloud,STOPWORDS</span><br><span class="line"><span class="comment"># 设置中文字体</span></span><br><span class="line">plt.rcParams[<span class="string">&#x27;font.sans-serif&#x27;</span>]=<span class="string">&#x27;SimHei&#x27;</span></span><br><span class="line">%config InlineBackend.figure_format = <span class="string">&#x27;svg&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-数据读取"><a href="#2-2-数据读取" class="headerlink" title="2.2 数据读取"></a>2.2 数据读取</h3><p>调用Pandas对象的<code>read_csv()</code>函数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#读数据集</span></span><br><span class="line">data = pd.read_csv(<span class="string">&#x27;./dataset/当当网机器学习图书数据（已清洗）.csv&#x27;</span>,sep=<span class="string">&#x27;,&#x27;</span>,encoding=<span class="string">&#x27;utf-8&#x27;</span>)</span><br><span class="line"><span class="comment">#查看前5行</span></span><br><span class="line">data.head(<span class="number">5</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-3-字段基本统计信息"><a href="#2-3-字段基本统计信息" class="headerlink" title="2.3 字段基本统计信息"></a>2.3 字段基本统计信息</h3><p>使用DataFrame对象的<code>describe()</code>方法可以查看各列基本统计信息，统计并生成数据集哥哥字段的样本数、均值、标准差、最小值、四分位数等。<br><code>describe()</code>方法主要参数：</p>
+<ul>
+<li>percentiles：自定义分位数，默认是25%,50%,75%</li>
+<li>include：指定统计的数据类型，默认只统计数值型，当为all时数值和离散型都统计</li>
+<li>exclude：意排除哪些字段，默认统计所有列</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#查看数据基本统计信息 </span></span><br><span class="line">data.describe(include=<span class="string">&#x27;all&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-可视化"><a href="#3-可视化" class="headerlink" title="3 可视化"></a>3 可视化</h2><p>使用python中的Matplotilb、Seaborn等库进行可视化。</p>
+<h3 id="3-1-各出版社的图书数量"><a href="#3-1-各出版社的图书数量" class="headerlink" title="3.1 各出版社的图书数量"></a>3.1 各出版社的图书数量</h3><p>统计各出版社关于机器学习相关的图书数量，对出版数量有直观了解。<br>Series对象的<code>value_counts()</code>方法可以对某列的取值数量分布进行统计，其主要参数：</p>
+<ul>
+<li>normallize：默认为False，若为True，则以百分比的形式显示</li>
+<li>sort：是否对结果进行排序，默认为True</li>
+<li>ascending: 默认对值降序排列(False)</li>
+<li>dropna:是否删除空值，默认删除(True)</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 各出版社出版的图书数量</span></span><br><span class="line">data[<span class="string">&#x27;出版社&#x27;</span>].value_counts(ascending=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+<p>从统计结果可以看到出版机器学习相关图书最多的机械工业出版社。</p>
+<h3 id="3-2-各星级图书数量统计柱状图"><a href="#3-2-各星级图书数量统计柱状图" class="headerlink" title="3.2 各星级图书数量统计柱状图"></a>3.2 各星级图书数量统计柱状图</h3><p>使用Seaborn中的<code>barplot</code>函数绘制柱状图，其主要参数有：</p>
+<ul>
+<li>x：x坐标传入的值</li>
+<li>y：y坐标传入的值</li>
+<li>data：传入的数据集</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看各星级的数量</span></span><br><span class="line">data[<span class="string">&#x27;星级&#x27;</span>].value_counts()</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># # 绘制画布，即画布的大小和分辨率</span></span><br><span class="line">plt.figure(figsize=(<span class="number">8</span>,<span class="number">5</span>), dpi=<span class="number">100</span>)</span><br><span class="line">x = data[<span class="string">&#x27;星级&#x27;</span>].value_counts().index</span><br><span class="line">y = data[<span class="string">&#x27;星级&#x27;</span>].value_counts().values</span><br><span class="line">sns.barplot(x,y)</span><br><span class="line"><span class="comment"># 设置标题</span></span><br><span class="line">plt.title(<span class="string">&#x27;各星级图书数量统计柱状图&#x27;</span>,fontsize=<span class="number">13</span>)</span><br><span class="line"><span class="comment"># 设置x轴标签</span></span><br><span class="line">plt.xlabel(<span class="string">&#x27;星级&#x27;</span>,fontsize=<span class="number">10</span>)</span><br><span class="line"><span class="comment"># 设置y轴标签</span></span><br><span class="line">plt.ylabel(<span class="string">&#x27;数量&#x27;</span>,fontsize=<span class="number">10</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-图书价格直方图"><a href="#3-3-图书价格直方图" class="headerlink" title="3.3 图书价格直方图"></a>3.3 图书价格直方图</h3><p>使用Seaborn中的<code>histplot</code>函数来绘制直方图，主要参数有：</p>
+<ul>
+<li>data：传入的数据</li>
+<li>x：做直方图所用的数据，必须是一维数组</li>
+<li>bins：分组数量</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制画布，即大小和分辨率</span></span><br><span class="line">plt.figure(figsize=(<span class="number">8</span>,<span class="number">5</span>),dpi=<span class="number">100</span>)</span><br><span class="line"><span class="comment"># 绘图，分别统计不同图书价格的数量</span></span><br><span class="line">sns.histplot(data,x=<span class="string">&#x27;价格&#x27;</span>,bins=<span class="number">20</span>)</span><br><span class="line"><span class="comment"># 绘制价格均值直线</span></span><br><span class="line">plt.plot([data[<span class="string">&#x27;价格&#x27;</span>].mean(),data[<span class="string">&#x27;价格&#x27;</span>].mean()],[<span class="number">0</span>,<span class="number">200</span>],<span class="string">&#x27;g--&#x27;</span>)</span><br><span class="line"><span class="comment"># 设置标题</span></span><br><span class="line">plt.title(<span class="string">&#x27;图书价格直方图&#x27;</span>,fontsize=<span class="number">13</span>)</span><br><span class="line"><span class="comment"># 设置x轴标签</span></span><br><span class="line">plt.xlabel(<span class="string">&#x27;图书价格&#x27;</span>,fontsize=<span class="number">10</span>)</span><br><span class="line"><span class="comment"># 设置y轴标签</span></span><br><span class="line">plt.ylabel(<span class="string">&#x27;数量&#x27;</span>,fontsize=<span class="number">10</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-4-高价图书分析"><a href="#3-4-高价图书分析" class="headerlink" title="3.4 高价图书分析"></a>3.4 高价图书分析</h3><p>设置价格大于100元为高价图书，筛选高价图书如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 利用DataFrame直接筛选输出高价图书</span></span><br><span class="line">data_price_high = data[data[<span class="string">&#x27;价格&#x27;</span>]&gt;<span class="number">100</span>]</span><br><span class="line"><span class="comment"># 查看前3行高价图书信息</span></span><br><span class="line">data_price_high.head(<span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+<h4 id="3-4-1高价书出版社统计"><a href="#3-4-1高价书出版社统计" class="headerlink" title="3.4.1高价书出版社统计"></a>3.4.1高价书出版社统计</h4><p>使用Matplotlib中的<code>pie</code>函数绘制饼状图，主要参数如下：</p>
+<ul>
+<li>x：每一块的数值比例</li>
+<li>labels：每一块外侧显示的说明文字</li>
+<li>autopct：控制图内显示的百分比</li>
+<li>startangle：起始角度，默认图是从x轴正方向画起，逆时针方向</li>
+<li>pctdistance：数值标签距离圆心的距离</li>
+<li>radius：控制饼图半径</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data_price_high[<span class="string">&#x27;出版社&#x27;</span>].value_counts().index</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 按照出版社进行分段统计</span></span><br><span class="line">x = data_price_high[<span class="string">&#x27;出版社&#x27;</span>].value_counts().values</span><br><span class="line"><span class="comment"># 设置饼图的标签</span></span><br><span class="line">labels = data_price_high[<span class="string">&#x27;出版社&#x27;</span>].value_counts().index</span><br><span class="line"><span class="comment"># 绘制画布</span></span><br><span class="line">plt.figure(figsize=(<span class="number">8</span>,<span class="number">5</span>),dpi=<span class="number">100</span>)</span><br><span class="line"><span class="comment"># 绘制饼状图</span></span><br><span class="line">plt.pie(x,labels=labels,autopct=<span class="string">&#x27;%1.1f%%&#x27;</span>,startangle=<span class="number">30</span>,pctdistance=<span class="number">0.8</span>,radius=<span class="number">1</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-4-2-高价书星级评定"><a href="#3-4-2-高价书星级评定" class="headerlink" title="3.4.2 高价书星级评定"></a>3.4.2 高价书星级评定</h4><p>使用Matplotlib中的<code>bach()</code>函数绘制柱状图，主要参数如下：</p>
+<ul>
+<li>y：y坐标</li>
+<li>width：柱子的宽度，即统计的数值大小</li>
+<li>height：柱子的高度，默认为0.8</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data_price_high.groupby(<span class="string">&#x27;出版社&#x27;</span>)[<span class="string">&#x27;星级&#x27;</span>].mean()</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 取值各个出版社星级的平均值</span></span><br><span class="line">width = data_price_high.groupby(<span class="string">&#x27;出版社&#x27;</span>)[<span class="string">&#x27;星级&#x27;</span>].mean().values</span><br><span class="line"></span><br><span class="line"><span class="comment"># 按照出版社求各个出版社星级评分的平均值，取出索引，即出版社</span></span><br><span class="line">y = data_price_high.groupby(<span class="string">&#x27;出版社&#x27;</span>)[<span class="string">&#x27;星级&#x27;</span>].mean().index</span><br><span class="line"><span class="comment"># 设置画布</span></span><br><span class="line">plt.figure(figsize=(<span class="number">8</span>,<span class="number">5</span>),dpi=<span class="number">100</span>)</span><br><span class="line"><span class="comment"># 绘图</span></span><br><span class="line">plt.barh(y,width,height=<span class="number">0.8</span>,color=<span class="string">&#x27;orange&#x27;</span>)</span><br><span class="line">plt.title(<span class="string">&#x27;高价图书星级评定&#x27;</span>,fontsize=<span class="number">13</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-5-各出版社图书价格均值"><a href="#3-5-各出版社图书价格均值" class="headerlink" title="3.5 各出版社图书价格均值"></a>3.5 各出版社图书价格均值</h3><p>对各出版社出版图书价格均值进行统计。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 按照出版社进行分组聚合，计算每组平均的图书价格，计算结果如下</span></span><br><span class="line">data.groupby(<span class="string">&#x27;出版社&#x27;</span>)[<span class="string">&#x27;价格&#x27;</span>].mean().sort_values(ascending=<span class="literal">False</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-6-各出版社出版图书口碑分析"><a href="#3-6-各出版社出版图书口碑分析" class="headerlink" title="3.6 各出版社出版图书口碑分析"></a>3.6 各出版社出版图书口碑分析</h3><p>将出版社一列分组，计算各出版社图书平均星级。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 按照出版社分段统计，求各个出版社星级的均值</span></span><br><span class="line">data_star_mean = data.groupby(<span class="string">&#x27;出版社&#x27;</span>)[<span class="string">&#x27;星级&#x27;</span>].mean()</span><br><span class="line"><span class="comment"># 将每个出版社的平均星级进行降序排序 默认是升序排序</span></span><br><span class="line">data_star_mean.sort_values(ascending = <span class="literal">False</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-7-图书简介文本分词"><a href="#3-7-图书简介文本分词" class="headerlink" title="3.7 图书简介文本分词"></a>3.7 图书简介文本分词</h3><p>对图书的简介进行分析，首先数据中简介1这一列是文本类型，因此我们要先进行分词，分词的目的是将文本按一定的规则进行分词处理。在这里我们使用jieba库里面的<code>cut</code>函数进行分词，jieba库是专门使用Python语言开发的分词库,占用资源较少，常识类文档的分词精度较高。<br><code>cut</code>函数的主要参数如下：</p>
+<ul>
+<li>sentence:要进行的分词的句子样本</li>
+<li>cut_all:分词的模式，有全模式和精准模式，默认false，精准模式</li>
+<li>HMM:隐马尔科夫链，即HMM模型，默认开启，这个是在分词的理论模型中用到的</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 对数据集的每个样本的文本进行中文分词</span></span><br><span class="line"><span class="comment">#记录分词后的结果</span></span><br><span class="line">cutted = [] </span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> item <span class="keyword">in</span> data[<span class="string">&#x27;简介1&#x27;</span>].values:</span><br><span class="line">    raw_words = (<span class="string">&quot; &quot;</span>.join(jieba.cut(<span class="built_in">str</span>(item))))</span><br><span class="line">    cutted.append(raw_words)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建一个新的DataFrame，将没分词和分词后的句子添加到里面</span></span><br><span class="line">data_cutted = pd.DataFrame(&#123;</span><br><span class="line">    <span class="string">&#x27;简介1&#x27;</span>: data[<span class="string">&#x27;简介1&#x27;</span>],</span><br><span class="line">    <span class="string">&#x27;简介1_cut&#x27;</span>: cutted</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">data_cutted.head()</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-8-词云图"><a href="#3-8-词云图" class="headerlink" title="3.8 词云图"></a>3.8 词云图</h3><p>分词处理完毕后，再处理停用词，最后形成词云图。利用wordcloud中的<code>WordColoud()</code>函数绘制词云图，其中主要参数为：</p>
+<ul>
+<li>font_path:字体路径</li>
+<li>stopword:将被忽略或者是删除的单词表</li>
+<li>width:词云图的宽度，默认400</li>
+<li>height：词云图的高度，默认200</li>
+<li>max_font_size:最大字体的大小</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 读取停用词</span></span><br><span class="line">stopwd=pd.read_csv(<span class="string">&#x27;./dataset/中文停用词表数据集.csv&#x27;</span>)</span><br><span class="line">stopwords=<span class="built_in">set</span>([i <span class="keyword">for</span> i <span class="keyword">in</span> stopwd[<span class="string">&#x27;cn_stopwords&#x27;</span>]])</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">len</span>(stopwords))</span><br><span class="line"><span class="comment"># stopwords</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义词云图</span></span><br><span class="line">wc = WordCloud(font_path = <span class="string">&quot;./dataset/simsun.ttc&quot;</span>,<span class="comment">#设置字体</span></span><br><span class="line">               stopwords = stopwords, <span class="comment">#设置停用词</span></span><br><span class="line">               background_color = <span class="string">&#x27;white&#x27;</span>,</span><br><span class="line">               width = <span class="number">1000</span>,</span><br><span class="line">               height = <span class="number">618</span>,</span><br><span class="line">               max_font_size = <span class="number">400</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 运行统计词频</span></span><br><span class="line">wc.generate(data_cutted[<span class="string">&#x27;简介1_cut&#x27;</span>].<span class="built_in">sum</span>())</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4、显示图片</span></span><br><span class="line">plt.figure(<span class="string">&quot;词云图&quot;</span>) <span class="comment">#指定所绘图名称</span></span><br><span class="line">plt.imshow(wc)       <span class="comment"># 以图片的形式显示词云</span></span><br><span class="line">plt.axis(<span class="string">&quot;off&quot;</span>)      <span class="comment">#关闭图像坐标系</span></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># data_cutted[&#x27;简介1_cut&#x27;].sum()</span></span><br></pre></td></tr></table></figure>
+<p>词云图突出显示了简介中出现频率较高的词，出现词频越高的词在词云图中显示越大。</p>
+
+
+
+<div class="article-footer reveal fs14"><section id="license"><div class="header"><span>许可协议</span></div><div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div></section></div>
+
+</article>
+
+<div class="related-wrap reveal" id="read-next"><section class="body"><div class="item" id="prev"></div><div class="item" id="next"><div class="note">较早文章</div><a href="/2023/08/30/%E7%BD%91%E7%AB%99%E6%95%B0%E6%8D%AE%E6%B8%85%E6%B4%97/">网站数据清洗</a></div></section></div>
+
+
+
+
+
+
+
+
+      
+<footer class="page-footer reveal fs12"><hr><div class="text"><p>本站由 <a href="/">@anonymity</a> 使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar">Stellar</a> 主题创建。<br>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+</div></footer>
+
+      <div class='float-panel mobile-only blur' style='display:none'>
+  <button type='button' class='sidebar-toggle mobile' onclick='sidebar.toggle()'>
+    <svg class="icon" style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="15301"><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 2.3 26.8 24.6 47.5 51.6 47.6h416.5v4z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15302"></path><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 1.9 27.7 23.9 49.7 51.6 51.6h416.5z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15303"></path></svg>
+  </button>
+</div>
+
+    </div>
+  </div>
+  <div class='scripts'>
+    <script type="text/javascript">
+  const stellar = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    loadCSS: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    // 从 butterfly 和 volantis 获得灵感
+    loadScript: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      if (src.startsWith('/')){
+        src = stellar.config.root + src.substring(1);
+      }
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    // https://github.com/jerryc127/hexo-theme-butterfly
+    jQuery: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        stellar.loadScript(stellar.plugins.jQuery).then(fn)
+      } else {
+        fn()
+      }
+    }
+  };
+  stellar.version = '1.19.0';
+  stellar.github = 'https://github.com/xaoxuu/hexo-theme-stellar/tree/1.19.0';
+  stellar.config = {
+    date_suffix: {
+      just: '刚刚',
+      min: '分钟前',
+      hour: '小时前',
+      day: '天前',
+      month: '个月前',
+    },
+    root : '/',
+  };
+
+  // required plugins (only load if needs)
+  stellar.plugins = {
+    jQuery: 'https://gcore.jsdelivr.net/npm/jquery@3.6.2/dist/jquery.min.js'
+  };
+
+  if ('local_search') {
+    stellar.search = {};
+    stellar.search.service = 'local_search';
+    if (stellar.search.service == 'local_search') {
+      let service_obj = Object.assign({}, {"field":"all","path":"/search.json","content":true,"codeblock":true,"sort":"-date"});
+      stellar.search[stellar.search.service] = service_obj;
+    }
+  }
+
+  // stellar js
+  stellar.plugins.stellar = Object.assign({"sites":"/js/plugins/sites.js","friends":"/js/plugins/friends.js","ghinfo":"/js/plugins/ghinfo.js","timeline":"/js/plugins/timeline.js","linkcard":"/js/plugins/linkcard.js","fcircle":"/js/plugins/fcircle.js","weibo":"/js/plugins/weibo.js"});
+
+  stellar.plugins.marked = Object.assign("https://cdn.bootcdn.net/ajax/libs/marked/4.0.18/marked.min.js");
+  // optional plugins
+  if ('true' == 'true') {
+    stellar.plugins.lazyload = Object.assign({"enable":true,"js":"https://gcore.jsdelivr.net/npm/vanilla-lazyload@17.8.3/dist/lazyload.min.js","transition":"blur"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.swiper = Object.assign({"enable":true,"css":"https://unpkg.com/swiper@8.4.5/swiper-bundle.min.css","js":"https://unpkg.com/swiper@8.4.5/swiper-bundle.min.js"});
+  }
+  if ('' == 'true') {
+    stellar.plugins.scrollreveal = Object.assign({"enable":null,"js":"https://gcore.jsdelivr.net/npm/scrollreveal@4.0.9/dist/scrollreveal.min.js","distance":"8px","duration":500,"interval":100,"scale":1});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.preload = Object.assign({"enable":true,"service":"flying_pages","instant_page":"https://gcore.jsdelivr.net/gh/volantis-x/cdn-volantis@4.1.2/js/instant_page.js","flying_pages":"https://gcore.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.fancybox = Object.assign({"enable":true,"js":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js","css":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.css","selector":".swiper-slide img"});
+  }
+  if ('false' == 'true') {
+    stellar.plugins.heti = Object.assign({"enable":false,"css":"https://unpkg.com/heti@0.9.2/umd/heti.min.css","js":"https://unpkg.com/heti@0.9.2/umd/heti-addon.min.js"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.copycode = Object.assign({"enable":true,"js":"/js/plugins/copycode.js","default_text":"Copy","success_text":"Copied"});
+  }
+</script>
+
+<!-- required -->
+
+  
+<script src="/js/main.js" async></script>
+
+
+
+<!-- optional -->
+
+
+
+<!-- inject -->
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+
+<head>
+  <meta name="generator" content="Hexo 6.3.0">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.19.0">
+  <meta charset="utf-8">
+  
+
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  <link rel='dns-prefetch' href='https://gcore.jsdelivr.net'>
+  <link rel="preconnect" href="https://gcore.jsdelivr.net" crossorigin>
+  <link rel='dns-prefetch' href='//unpkg.com'>
+
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" content="#f8f8f8">
+  
+  <title>随机森林分析 - S of S of S</title>
+
+  
+    <meta name="description" content="准备数据共计1059条，各数据字段含义如下表所示：    字段 含义    case 国家编号，代表特定国家的数字   cc3 国家代码，三个字母的国家&#x2F;地区代码   country 国家名称   year 观测年份   systemic_crisis 系统性危机，“ 0”表示当年未发生系统性危机，“ 1”表示当年有发生系统性危机   exch_usd 该国货币兑美元的汇率   dome">
+<meta property="og:type" content="article">
+<meta property="og:title" content="随机森林分析">
+<meta property="og:url" content="https://dfj9401.github.io/2023/08/31/%E9%9A%8F%E6%9C%BA%E6%A3%AE%E6%9E%97%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="S of S of S">
+<meta property="og:description" content="准备数据共计1059条，各数据字段含义如下表所示：    字段 含义    case 国家编号，代表特定国家的数字   cc3 国家代码，三个字母的国家&#x2F;地区代码   country 国家名称   year 观测年份   systemic_crisis 系统性危机，“ 0”表示当年未发生系统性危机，“ 1”表示当年有发生系统性危机   exch_usd 该国货币兑美元的汇率   dome">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-08-31T07:30:07.000Z">
+<meta property="article:modified_time" content="2023-08-31T09:00:13.758Z">
+<meta property="article:author" content="lub">
+<meta name="twitter:card" content="summary">
+  
+  
+  
+  
+
+  <!-- feed -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/main.css">
+
+  
+
+  
+
+  
+
+  
+
+
+  
+</head>
+
+<body>
+  
+
+
+
+
+  <div class='l_body' id='start'>
+    <aside class='l_left' layout='post'>
+    
+
+  
+
+<header class="header"><div class="logo-wrap"><a class="title" href="/"><div class="main" ff="title">S of S of S</div><div class="sub normal cap">学习记录</div><div class="sub hover cap" style="opacity:0"> 生活记录</div></a></div>
+
+<nav class="menu dis-select"></nav>
+</header>
+
+
+<div class="widgets">
+<widget class="widget-wrapper search"><div class="widget-body"><div class="search-wrapper" id="search"><form class="search-form"><input type="text" class="search-input" id="search-input" data-filter="/blog/" placeholder="文章搜索"><svg t="1670596976048" class="icon search-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2676" width="200" height="200"><path d="M938.2 832.6L723.8 618.1c-2.5-2.5-5.3-4.4-7.9-6.4 36.2-55.6 57.3-121.8 57.3-193.1C773.3 222.8 614.6 64 418.7 64S64 222.8 64 418.6c0 195.9 158.8 354.6 354.6 354.6 71.3 0 137.5-21.2 193.2-57.4 2 2.7 3.9 5.4 6.3 7.8L832.5 938c14.6 14.6 33.7 21.9 52.8 21.9 19.1 0 38.2-7.3 52.8-21.8 29.2-29.1 29.2-76.4 0.1-105.5M418.7 661.3C284.9 661.3 176 552.4 176 418.6 176 284.9 284.9 176 418.7 176c133.8 0 242.6 108.9 242.6 242.7 0 133.7-108.9 242.6-242.6 242.6" p-id="2677"></path></svg></form><div id="search-result"></div><div class="search-no-result">没有找到内容！</div></div></div></widget>
+
+
+<widget class="widget-wrapper toc single" id="data-toc"><div class="widget-header cap dis-select"><span class="name">随机森林分析</span></div><div class="widget-body fs14"><div class="doc-tree active"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%86%E5%A4%87"><span class="toc-text">准备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%95%B0%E6%8D%AE%E8%AF%BB%E5%8F%96%E4%B8%8E%E9%A2%84%E5%A4%84%E7%90%86"><span class="toc-text">1 数据读取与预处理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE"><span class="toc-text">1.1 读取数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E6%9F%A5%E7%9C%8B%E6%95%B0%E6%8D%AE"><span class="toc-text">1.2 查看数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86"><span class="toc-text">1.3 数据预处理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%BB%8F%E6%B5%8E%E6%8C%87%E6%A0%87%E6%8E%A2%E7%B4%A2%E6%80%A7%E5%88%86%E6%9E%90"><span class="toc-text">2 经济指标探索性分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E6%B1%87%E7%8E%87%E5%8F%98%E5%8C%96%E6%83%85%E5%86%B5"><span class="toc-text">2.1 汇率变化情况</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E9%80%9A%E8%B4%A7%E8%86%A8%E8%83%80%E7%8E%87%E5%8F%98%E5%8C%96%E6%83%85%E5%86%B5"><span class="toc-text">2.2 通货膨胀率变化情况</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E5%85%B6%E4%BB%96%E5%8D%B1%E6%9C%BA%E5%88%86%E5%B8%83%E6%83%85%E5%86%B5"><span class="toc-text">2.3 其他危机分布情况</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-%E7%89%B9%E5%BE%81%E9%97%B4%E7%9A%84%E7%9B%B8%E5%85%B3%E6%80%A7"><span class="toc-text">2.4 特征间的相关性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%9E%84%E5%BB%BA%E9%93%B6%E8%A1%8C%E5%8D%B1%E6%9C%BA%E9%A2%84%E6%B5%8B%E6%A8%A1%E5%9E%8B"><span class="toc-text">3 构建银行危机预测模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E7%89%B9%E5%BE%81%E7%BC%96%E7%A0%81"><span class="toc-text">3.1 特征编码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E6%95%B0%E6%8D%AE%E9%9B%86%E5%88%92%E5%88%86%E4%B8%8E%E5%88%86%E5%B1%82%E9%87%87%E6%A0%B7"><span class="toc-text">3.2 数据集划分与分层采样</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E5%BB%BA%E7%AB%8B%E9%9A%8F%E6%9C%BA%E6%A3%AE%E6%9E%97%E9%A2%84%E6%B5%8B%E6%A8%A1%E5%9E%8B"><span class="toc-text">3.3 建立随机森林预测模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E6%A8%A1%E5%9E%8B%E8%AF%84%E4%BC%B0"><span class="toc-text">3.4 模型评估</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-%E4%BD%BF%E7%94%A8SMOTE%E8%BF%9B%E8%A1%8C%E9%87%87%E6%A0%B7%E4%BC%98%E5%8C%96%E6%A8%A1%E5%9E%8B"><span class="toc-text">3.5 使用SMOTE进行采样优化模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-%E7%89%B9%E5%BE%81%E9%87%8D%E8%A6%81%E6%80%A7%E6%8E%92%E5%BA%8F"><span class="toc-text">3.6 特征重要性排序</span></a></li></ol></li></ol></div></div></widget>
+
+
+
+
+</div>
+
+
+    </aside>
+    <div class='l_main'>
+      
+
+      
+
+
+
+<div class="bread-nav fs12"><div id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a><span class="sep"></span><a class="cap breadcrumb" href="/">文章</a></div><div id="post-meta">发布于&nbsp;<time datetime="2023-08-31T07:30:07.000Z">2023-08-31</time></div></div>
+
+<article class='md-text content post'>
+<h1 class="article-title"><span>随机森林分析</span></h1>
+<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p>数据共计1059条，各数据字段含义如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th align="left">字段</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">case</td>
+<td align="left">国家编号，代表特定国家的数字</td>
+</tr>
+<tr>
+<td align="left">cc3</td>
+<td align="left">国家代码，三个字母的国家&#x2F;地区代码</td>
+</tr>
+<tr>
+<td align="left">country</td>
+<td align="left">国家名称</td>
+</tr>
+<tr>
+<td align="left">year</td>
+<td align="left">观测年份</td>
+</tr>
+<tr>
+<td align="left">systemic_crisis</td>
+<td align="left">系统性危机，“ 0”表示当年未发生系统性危机，“ 1”表示当年有发生系统性危机</td>
+</tr>
+<tr>
+<td align="left">exch_usd</td>
+<td align="left">该国货币兑美元的汇率</td>
+</tr>
+<tr>
+<td align="left">domestic_debt_in_default</td>
+<td align="left">国内债务违约，“0”表示当年未发生国内债务违约，“1”表示当年有发生国内债务违约</td>
+</tr>
+<tr>
+<td align="left">sovereign_external_debt_default</td>
+<td align="left">主权外债违约，“0”表示当年未发生主权外债违约，“1”表示当年有发生主权外债违约</td>
+</tr>
+<tr>
+<td align="left">gdp_weighted_default</td>
+<td align="left">违约债务总额与GDP之比</td>
+</tr>
+<tr>
+<td align="left">inflation_annual_cpi</td>
+<td align="left">年度CPI通货膨胀率</td>
+</tr>
+<tr>
+<td align="left">independence</td>
+<td align="left">独立性，“ 0”表示“无独立性”，“ 1”表示“独立性”</td>
+</tr>
+<tr>
+<td align="left">currency_crises</td>
+<td align="left">货币危机，“ 0”表示当年未发生“货币危机”，“ 1”表示当年有发生“货币危机”</td>
+</tr>
+<tr>
+<td align="left">inflation_crises</td>
+<td align="left">通胀危机，“ 0”表示当年未发生“通胀危机”，“ 1”表示当年有发生“通胀危机”</td>
+</tr>
+<tr>
+<td align="left">banking_crisis</td>
+<td align="left">银行业危机，“ no_crisis”表示当年没有发生银行业危机，而“ crisis”表示当年有发生银行业危机</td>
+</tr>
+</tbody></table>
+<h2 id="1-数据读取与预处理"><a href="#1-数据读取与预处理" class="headerlink" title="1 数据读取与预处理"></a>1 数据读取与预处理</h2><h3 id="1-1-读取数据"><a href="#1-1-读取数据" class="headerlink" title="1.1 读取数据"></a>1.1 读取数据</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 导入相应模块</span></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np </span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> matplotlib.font_manager <span class="keyword">import</span> FontProperties</span><br><span class="line"><span class="comment"># 设置字体</span></span><br><span class="line">font = FontProperties(fname = <span class="string">&quot;./dataset/SimHei.ttf&quot;</span>, size=<span class="number">14</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置绘图风格</span></span><br><span class="line">%matplotlib inline</span><br><span class="line">sns.<span class="built_in">set</span>(style=<span class="string">&#x27;whitegrid&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 忽略所有警告</span></span><br><span class="line"><span class="keyword">import</span> warnings</span><br><span class="line">warnings.filterwarnings(<span class="string">&#x27;ignore&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 读取数据</span></span><br><span class="line">data = pd.read_csv(<span class="string">&#x27;./dataset/african_crises.csv&#x27;</span>)</span><br><span class="line">data.sample(<span class="number">5</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-查看数据"><a href="#1-2-查看数据" class="headerlink" title="1.2 查看数据"></a>1.2 查看数据</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">unique_countries = data.country.unique()</span><br><span class="line">unique_countries</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 数据集的基本信息</span></span><br><span class="line">data.______()</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看数据统计性指标</span></span><br><span class="line">data.____________(include = <span class="string">&#x27;all&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-3-数据预处理"><a href="#1-3-数据预处理" class="headerlink" title="1.3 数据预处理"></a>1.3 数据预处理</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#查看货币危机currency_crises的取值为2的数据</span></span><br><span class="line">data[data[<span class="string">&#x27;currency_crises&#x27;</span>] == <span class="number">2</span>] </span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data = data[data[<span class="string">&#x27;currency_crises&#x27;</span>] != <span class="number">2</span>]<span class="comment"># 得到生成删除货币危机currency_crises的取值为2的数据集</span></span><br><span class="line">data.______ <span class="comment"># 查看新生成的数据集大小</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-经济指标探索性分析"><a href="#2-经济指标探索性分析" class="headerlink" title="2 经济指标探索性分析"></a>2 经济指标探索性分析</h2><h3 id="2-1-汇率变化情况"><a href="#2-1-汇率变化情况" class="headerlink" title="2.1 汇率变化情况"></a>2.1 汇率变化情况</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">plt.figure(figsize=(<span class="number">12</span>,<span class="number">20</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">13</span>):</span><br><span class="line">    </span><br><span class="line">    plt.subplot(<span class="number">7</span>,<span class="number">2</span>,i+<span class="number">1</span>)</span><br><span class="line">    country = unique_countries[i]</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 随机生成一种颜色 random.choice():从一个序列中随机的抽取一个元素，抽取6次组成6位代表随机颜色</span></span><br><span class="line">    col=<span class="string">&quot;#&quot;</span>+<span class="string">&#x27;&#x27;</span>.join([random.choice(<span class="string">&#x27;0123456789ABCDEF&#x27;</span>) <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">6</span>)])</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 绘制折线图</span></span><br><span class="line">    sns.____________(data[data.country == country][<span class="string">&#x27;year&#x27;</span>],data[data.country == country][<span class="string">&#x27;exch_usd&#x27;</span>],label = country,color = col)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># np.logical_and()逻辑与 两个条件均成立时返回True</span></span><br><span class="line">    plt.plot([np.<span class="built_in">min</span>(data[np.logical_and(data.country == country,data.independence == <span class="number">1</span>)][<span class="string">&#x27;year&#x27;</span>]),</span><br><span class="line">              np.<span class="built_in">min</span>(data[np.logical_and(data.country == country,data.independence == <span class="number">1</span>)][<span class="string">&#x27;year&#x27;</span>])],</span><br><span class="line">             [<span class="number">0</span>,np.<span class="built_in">max</span>(data[data.country == country][<span class="string">&#x27;exch_usd&#x27;</span>])],color = <span class="string">&#x27;black&#x27;</span>,linestyle = <span class="string">&#x27;dotted&#x27;</span>,alpha = <span class="number">0.8</span>)</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    plt.______(country) <span class="comment"># 添加图像标题</span></span><br><span class="line">    </span><br><span class="line">plt.tight_layout() <span class="comment"># 自动调整子图参数以提供指定的填充</span></span><br><span class="line">plt.show() <span class="comment"># 输出13个国家的货币兑美元的汇率变化情况的折线图</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-通货膨胀率变化情况"><a href="#2-2-通货膨胀率变化情况" class="headerlink" title="2.2 通货膨胀率变化情况"></a>2.2 通货膨胀率变化情况</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">plt.figure(figsize=(<span class="number">12</span>,<span class="number">20</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">13</span>):</span><br><span class="line">    </span><br><span class="line">    plt.subplot(<span class="number">7</span>,<span class="number">2</span>,i+<span class="number">1</span>)</span><br><span class="line">    country = unique_countries[i]</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 随机生成一种颜色</span></span><br><span class="line">    col=<span class="string">&quot;#&quot;</span>+<span class="string">&#x27;&#x27;</span>.join([random.choice(<span class="string">&#x27;0123456789ABCDEF&#x27;</span>) <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">6</span>)])</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 绘制折线图</span></span><br><span class="line">    sns.lineplot(data[data.country == country][<span class="string">&#x27;year&#x27;</span>],data[data.country == country][<span class="string">&#x27;inflation_annual_cpi&#x27;</span>],label = country,color = col)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 加入散点图</span></span><br><span class="line">    plt.______(data[data.country == country][<span class="string">&#x27;year&#x27;</span>],data[data.country == country][<span class="string">&#x27;inflation_annual_cpi&#x27;</span>],color = col,s = <span class="number">28</span>) <span class="comment"># s指散点的面积</span></span><br><span class="line">    </span><br><span class="line">    plt.plot([np.<span class="built_in">min</span>(data[np.logical_and(data.country == country,data.independence==<span class="number">1</span>)][<span class="string">&#x27;year&#x27;</span>]),</span><br><span class="line">              np.<span class="built_in">min</span>(data[np.logical_and(data.country == country,data.independence==<span class="number">1</span>)][<span class="string">&#x27;year&#x27;</span>])],</span><br><span class="line">             [np.<span class="built_in">min</span>(data[data.country == country][<span class="string">&#x27;inflation_annual_cpi&#x27;</span>]),np.<span class="built_in">max</span>(data[data.country == country][<span class="string">&#x27;inflation_annual_cpi&#x27;</span>])],</span><br><span class="line">             color = <span class="string">&#x27;black&#x27;</span>,linestyle = <span class="string">&#x27;dotted&#x27;</span>,alpha = <span class="number">0.8</span>) <span class="comment"># alpha指颜色透明度</span></span><br><span class="line"></span><br><span class="line">    plt.title(country)</span><br><span class="line">    </span><br><span class="line">plt.tight_layout() <span class="comment"># 自动调整子图参数以提供指定的填充</span></span><br><span class="line">plt.show() <span class="comment"># 输出13个国家的通货膨胀率变化情况</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-3-其他危机分布情况"><a href="#2-3-其他危机分布情况" class="headerlink" title="2.3 其他危机分布情况"></a>2.3 其他危机分布情况</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">sns.<span class="built_in">set</span>(style=<span class="string">&#x27;darkgrid&#x27;</span>)</span><br><span class="line">columns = [<span class="string">&#x27;systemic_crisis&#x27;</span>,<span class="string">&#x27;domestic_debt_in_default&#x27;</span>,<span class="string">&#x27;sovereign_external_debt_default&#x27;</span>,<span class="string">&#x27;currency_crises&#x27;</span>,<span class="string">&#x27;inflation_crises&#x27;</span>,<span class="string">&#x27;banking_crisis&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 绘制其他特征的分布规律图</span></span><br><span class="line">plt.figure(figsize=(<span class="number">16</span>,<span class="number">16</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">6</span>):</span><br><span class="line">    plt.subplot(<span class="string">&#x27;32&#x27;</span>+<span class="built_in">str</span>(i+<span class="number">1</span>))</span><br><span class="line">    sns.countplot(y = data.country,hue = data[columns[i]],palette = <span class="string">&#x27;rocket&#x27;</span>) <span class="comment"># palette为调色板</span></span><br><span class="line">    plt.______(loc = <span class="number">0</span>) <span class="comment"># 选择最优的图例位置</span></span><br><span class="line">    plt.title(columns[i])</span><br><span class="line">    </span><br><span class="line">plt.tight_layout()</span><br><span class="line">plt.show()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-4-特征间的相关性"><a href="#2-4-特征间的相关性" class="headerlink" title="2.4 特征间的相关性"></a>2.4 特征间的相关性</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建包含年份，国家，系统性危机，银行危机的数据集</span></span><br><span class="line">systemic = data[[<span class="string">&#x27;year&#x27;</span>,<span class="string">&#x27;country&#x27;</span>, <span class="string">&#x27;systemic_crisis&#x27;</span>, <span class="string">&#x27;banking_crisis&#x27;</span>]]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 绘制观察系统性危机与银行危机发生的重叠性</span></span><br><span class="line">systemic = systemic[(systemic[<span class="string">&#x27;country&#x27;</span>] == <span class="string">&#x27;Central African Republic&#x27;</span>) | (systemic[<span class="string">&#x27;country&#x27;</span>]==<span class="string">&#x27;Kenya&#x27;</span>) | (systemic[<span class="string">&#x27;country&#x27;</span>]==<span class="string">&#x27;Zimbabwe&#x27;</span>) ]</span><br><span class="line">plt.figure(figsize=(<span class="number">12</span>,<span class="number">12</span>))</span><br><span class="line">count = <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> country <span class="keyword">in</span> systemic.country.unique():</span><br><span class="line">    plt.subplot(<span class="built_in">len</span>(systemic.country.unique()),<span class="number">1</span>,count)</span><br><span class="line">    subset = systemic[(systemic[<span class="string">&#x27;country&#x27;</span>] == country)]</span><br><span class="line">    sns.lineplot(subset[<span class="string">&#x27;year&#x27;</span>],subset[<span class="string">&#x27;systemic_crisis&#x27;</span>],ci=<span class="literal">None</span>) <span class="comment"># ci参数可用于指定线段区间的大小</span></span><br><span class="line">    plt.scatter(subset[<span class="string">&#x27;year&#x27;</span>],subset[<span class="string">&quot;banking_crisis&quot;</span>], color=<span class="string">&#x27;coral&#x27;</span>, label=<span class="string">&#x27;Banking Crisis&#x27;</span>)</span><br><span class="line">    plt.subplots_adjust(hspace=<span class="number">0.6</span>) <span class="comment"># hspace用来设置子图上下间的距离</span></span><br><span class="line">    plt.______(<span class="string">&#x27;Years&#x27;</span>) <span class="comment"># 给x轴命名</span></span><br><span class="line">    plt.______(<span class="string">&#x27;Systemic Crisis/Banking Crisis&#x27;</span>) <span class="comment"># 给y轴命名</span></span><br><span class="line">    plt.title(country)</span><br><span class="line">    count+=<span class="number">1</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将银行危机banking_crisis列进行特征编码</span></span><br><span class="line"><span class="comment"># 将银行危机banking_crisis中未发生危机的数据标为0，发生危机的数据标为1</span></span><br><span class="line">data[<span class="string">&#x27;banking_crisis&#x27;</span>] = data[<span class="string">&#x27;banking_crisis&#x27;</span>].<span class="built_in">map</span>(&#123;<span class="string">&quot;no_crisis&quot;</span>:<span class="number">0</span>,<span class="string">&quot;crisis&quot;</span>:<span class="number">1</span>&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 选出所有特征</span></span><br><span class="line">selected_features = [<span class="string">&#x27;systemic_crisis&#x27;</span>, <span class="string">&#x27;exch_usd&#x27;</span>, <span class="string">&#x27;domestic_debt_in_default&#x27;</span>,<span class="string">&#x27;sovereign_external_debt_default&#x27;</span>, <span class="string">&#x27;gdp_weighted_default&#x27;</span>,</span><br><span class="line">       <span class="string">&#x27;inflation_annual_cpi&#x27;</span>, <span class="string">&#x27;independence&#x27;</span>, <span class="string">&#x27;currency_crises&#x27;</span>,<span class="string">&#x27;inflation_crises&#x27;</span>,<span class="string">&#x27;banking_crisis&#x27;</span>]</span><br><span class="line"></span><br><span class="line">corr = data[selected_features].______() <span class="comment"># 得到各特征间的相关性大小生成相关性矩阵</span></span><br><span class="line"></span><br><span class="line">fig = plt.figure(figsize = (<span class="number">12</span>,<span class="number">8</span>))</span><br><span class="line"></span><br><span class="line">cmap = sns.diverging_palette(<span class="number">220</span>, <span class="number">10</span>, as_cmap=<span class="literal">True</span>) <span class="comment"># 生成蓝-白-红的颜色列表</span></span><br><span class="line">mask = np.zeros_like(corr, dtype=np.<span class="built_in">bool</span>) <span class="comment"># 返回与相关性矩阵具有相同形状和类型的零数组作为掩码</span></span><br><span class="line">mask[np.triu_indices_from(mask)] = <span class="literal">True</span> <span class="comment"># 给相关性矩阵的上三角阵生成掩码</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 绘制热力图</span></span><br><span class="line">sns.______(corr, mask=mask, cmap=cmap,vmin=-<span class="number">0.5</span>,vmax=<span class="number">0.7</span>, center=<span class="number">0</span>,annot = <span class="literal">True</span>,</span><br><span class="line">            square=<span class="literal">True</span>, linewidths=<span class="number">.5</span>,cbar_kws=&#123;<span class="string">&quot;shrink&quot;</span>: <span class="number">.5</span>&#125;);</span><br><span class="line"></span><br><span class="line">plt.title(<span class="string">&quot;特征间的相关性&quot;</span>,fontproperties = font)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-构建银行危机预测模型"><a href="#3-构建银行危机预测模型" class="headerlink" title="3 构建银行危机预测模型"></a>3 构建银行危机预测模型</h2><ul>
+<li>特征编码</li>
+<li>数据集划分与分层采样</li>
+<li>建立随机森林预测模型</li>
+<li>模型效果的评估</li>
+<li>使用SMOTE进行过采样优化模型</li>
+<li>特征重要性排序</li>
+</ul>
+<h3 id="3-1-特征编码"><a href="#3-1-特征编码" class="headerlink" title="3.1 特征编码"></a>3.1 特征编码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data.drop([<span class="string">&#x27;case&#x27;</span>,<span class="string">&#x27;cc3&#x27;</span>],axis = <span class="number">1</span>,inplace = <span class="literal">True</span>) <span class="comment"># 在原数据集上删掉case列和cc3列</span></span><br><span class="line">data.head()</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 对国家country进行labelencoder</span></span><br><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> LabelEncoder</span><br><span class="line">le = LabelEncoder()</span><br><span class="line">le.______(data[<span class="string">&#x27;country&#x27;</span>].values) <span class="comment"># 将country的值塞入空字典</span></span><br><span class="line">data[<span class="string">&#x27;country&#x27;</span>]=le.____________(data[<span class="string">&#x27;country&#x27;</span>].values) <span class="comment"># 将字典中的country的值转变为索引值</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(data[<span class="string">&#x27;country&#x27;</span>]) <span class="comment"># 查看特征编码后的country名称</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制未发生银行危机no_crisis与发生银行危机crisis的柱状图</span></span><br><span class="line">fig = plt.figure(figsize = (<span class="number">8</span>,<span class="number">6</span>))</span><br><span class="line"></span><br><span class="line">data[<span class="string">&#x27;banking_crisis&#x27;</span>].value_counts().plot(kind=<span class="string">&#x27;______&#x27;</span>,rot = <span class="number">360</span>,color = <span class="string">&#x27;lightseagreen&#x27;</span>)</span><br><span class="line"></span><br><span class="line">plt.xticks([<span class="number">0</span>,<span class="number">1</span>],[<span class="string">&quot;no_crisis&quot;</span>,<span class="string">&quot;crisis&quot;</span>])</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-数据集划分与分层采样"><a href="#3-2-数据集划分与分层采样" class="headerlink" title="3.2 数据集划分与分层采样"></a>3.2 数据集划分与分层采样</h3><p>下面我们开始对数据进行训练集与测试集的划分。在Sklearn中的<code>model_selection</code>模块，存在<code>train_test_split()</code>函数，用作训练集和测试集划分，函数语法为：<code>train_test_split(x,y,test_size = None,random_state = None,stratify = y)</code>，其中：</p>
+<ul>
+<li><code>x,y</code>: 分别为预测所需的所有特征，以及需要预测的特征。</li>
+<li><code>test_size</code>: 测试集比例，例如<code>test_size=0.2</code>则表示划分<code>20%</code>的数据作为测试集。</li>
+<li><code>random_state</code>: 随机种子，因为划分过程是随机的，为了进行可重复的训练，需要固定一<code>random_state</code>，结果重现。</li>
+<li><code>stratify</code>: 使用分层采样，保证从发生银行危机样本和未发生银行危机样本中抽取了同样比例的训练集和测试集。</li>
+</ul>
+<p>函数最终将返回四个变量，分别为<code>x</code>的训练集和测试集，以及<code>y</code>的训练集和测试集。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 训练集与测试集的划分</span></span><br><span class="line"><span class="keyword">from</span> sklearn <span class="keyword">import</span> model_selection</span><br><span class="line"></span><br><span class="line">x = data.drop(<span class="string">&#x27;banking_crisis&#x27;</span>,axis = <span class="number">1</span>) <span class="comment"># 将删除banking_crisis列的数据集作为x</span></span><br><span class="line">y = data[<span class="string">&#x27;banking_crisis&#x27;</span>] <span class="comment"># banking_crisis列作为y</span></span><br><span class="line"></span><br><span class="line">x_train,x_test,y_train,y_test = model_selection.__________________(x, y,test_size=<span class="number">0.2</span>,random_state = <span class="number">33</span>,stratify=y)</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-建立随机森林预测模型"><a href="#3-3-建立随机森林预测模型" class="headerlink" title="3.3 建立随机森林预测模型"></a>3.3 建立随机森林预测模型</h3><p>随机森林是一种集成学习方法，通过使用随机的方式从数据中抽取样本和特征，训练多个不同的决策树，形成“森林”。每个树都给出自己的分类意见，称“投票”。在分类问题下，森林选择选票最多的分类；在回归问题下则使用平均值。<br>在Python中使用<code>sklearn.ensemble</code>的<code>RandomForestClassifier</code>构建分类模型，其主要参数包括：</p>
+<ul>
+<li><code>n_estimators</code> : 训练分类器的数量(默认为100)；</li>
+<li><code>max_depth</code> : 每棵树的最大深度(默认为3)；</li>
+<li><code>max_features</code>: 划分的最大特征数(默认为 ‘auto’)</li>
+<li><code>random_state</code> : 随机种子。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> RandomForestClassifier</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练随机森林分类模型</span></span><br><span class="line">rf = RandomForestClassifier(n_estimators = <span class="number">100</span>, max_depth = <span class="number">20</span>,max_features = <span class="number">10</span>, random_state = <span class="number">20</span>)</span><br><span class="line">rf.fit(x_train, y_train) </span><br><span class="line">y_pred = rf.______(x_test) <span class="comment"># 对y进行预测</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-4-模型评估"><a href="#3-4-模型评估" class="headerlink" title="3.4 模型评估"></a>3.4 模型评估</h3><p>在评价模型好坏时，我们分别使用函数<code>classification_report()</code>、<code>confusion_matrix()</code>和<code>accuracy_score()</code>,用于输出模型的预测报告、混淆矩阵和分类正确率。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> classification_report,confusion_matrix</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(classification_report(y_test, y_pred)) <span class="comment"># 输出模型的预测报告</span></span><br><span class="line">confusion_matrix = __________________(y_test, y_pred) </span><br><span class="line"><span class="built_in">print</span>(confusion_matrix) <span class="comment"># 输出混淆矩阵</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 绘制混淆矩阵热力图</span></span><br><span class="line">fig,ax = plt.subplots(figsize=(<span class="number">8</span>,<span class="number">6</span>)) </span><br><span class="line">sns._________(confusion_matrix,ax=ax,annot=<span class="literal">True</span>,annot_kws=&#123;<span class="string">&#x27;size&#x27;</span>:<span class="number">15</span>&#125;, fmt=<span class="string">&#x27;d&#x27;</span>,cmap = <span class="string">&#x27;YlGnBu_r&#x27;</span>)</span><br><span class="line">ax.set_ylabel(<span class="string">&#x27;真实值&#x27;</span>,fontproperties = font)</span><br><span class="line">ax.set_xlabel(<span class="string">&#x27;预测值&#x27;</span>,fontproperties = font)</span><br><span class="line">ax.set_title(<span class="string">&#x27;混淆矩阵热力图&#x27;</span>,fontproperties = font)</span><br><span class="line">plt.show() <span class="comment"># 输出混淆矩阵热力图</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> roc_auc_score</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> roc_curve</span><br><span class="line"></span><br><span class="line">roc_auc = ____________(y_test, rf.predict(x_test)) <span class="comment">#计算auc的值</span></span><br><span class="line">fpr, tpr, thresholds = ____________(y_test, rf.predict_proba(x_test)[:,<span class="number">1</span>]) <span class="comment">#计算不同阈值下的TPR和FPR</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 绘制ROC曲线</span></span><br><span class="line">plt.figure(figsize = (<span class="number">8</span>,<span class="number">6</span>))</span><br><span class="line"></span><br><span class="line">plt.plot(fpr, tpr, label=<span class="string">&#x27;Random Forest (area = %0.2f)&#x27;</span> % roc_auc)</span><br><span class="line">plt.plot([<span class="number">0</span>, <span class="number">1</span>], [<span class="number">0</span>, <span class="number">1</span>],<span class="string">&#x27;r--&#x27;</span>)<span class="comment"># 绘制随机猜测线</span></span><br><span class="line">plt.xlim([<span class="number">0.0</span>, <span class="number">1.0</span>])</span><br><span class="line">plt.ylim([<span class="number">0.0</span>, <span class="number">1.05</span>])</span><br><span class="line">plt.xlabel(<span class="string">&#x27;False Positive Rate&#x27;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&#x27;True Positive Rate&#x27;</span>)</span><br><span class="line">plt.title(<span class="string">&#x27;ROC curve&#x27;</span>)</span><br><span class="line"></span><br><span class="line">plt.legend(loc=<span class="string">&quot;lower right&quot;</span>) <span class="comment"># 图例位置位于右下方</span></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-5-使用SMOTE进行采样优化模型"><a href="#3-5-使用SMOTE进行采样优化模型" class="headerlink" title="3.5 使用SMOTE进行采样优化模型"></a>3.5 使用SMOTE进行采样优化模型</h3><p>在对数据集进行划分，接着对训练集进行过采样，将少数类进行扩充。在Python中使用<code>imblearn.over_sampling</code>的<code>SMOTE</code>类构建SMOTE过采样模型。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 对x_train,y_train进行SMOTE过采样</span></span><br><span class="line"><span class="keyword">from</span> imblearn.over_sampling <span class="keyword">import</span> SMOTE</span><br><span class="line">x_train_resampled, y_train_resampled = SMOTE(random_state=<span class="number">4</span>).fit_resample(x_train, y_train)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(x_train_resampled.shape, y_train_resampled.shape) <span class="comment">#查看采样后的数据集大小</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 通过网格搜索选择最优参数</span></span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> GridSearchCV</span><br><span class="line">param_grid = [&#123;</span><br><span class="line">    <span class="string">&#x27;n_estimators&#x27;</span>:[<span class="number">10</span>,<span class="number">20</span>,<span class="number">30</span>,<span class="number">40</span>,<span class="number">50</span>],</span><br><span class="line">    <span class="string">&#x27;max_depth&#x27;</span>:[<span class="number">5</span>,<span class="number">8</span>,<span class="number">10</span>,<span class="number">15</span>,<span class="number">20</span>,<span class="number">25</span>]</span><br><span class="line">&#125;]</span><br><span class="line">grid_search = GridSearchCV(rf, param_grid, scoring = <span class="string">&#x27;recall&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 输出最佳参数组合以及分数</span></span><br><span class="line">grid_search.fit(x_train_resampled, y_train_resampled)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;best params:&quot;</span>, grid_search.best_params_)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;best score:&quot;</span>, grid_search.best_score_)</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-6-特征重要性排序"><a href="#3-6-特征重要性排序" class="headerlink" title="3.6 特征重要性排序"></a>3.6 特征重要性排序</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">fig = plt.figure(figsize=(<span class="number">16</span>,<span class="number">12</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 得到随机森林特征重要性评分</span></span><br><span class="line">rf_importance = rf.__________________</span><br><span class="line">index = data.drop([<span class="string">&#x27;banking_crisis&#x27;</span>], axis=<span class="number">1</span>).columns <span class="comment"># 删掉银行危机banking_crisis列特征</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 对得到的特征重要性评分进行降序排序</span></span><br><span class="line">rf_feature_importance = pd.DataFrame(rf_importance.T, index=index,columns=[<span class="string">&#x27;score&#x27;</span>]).sort_values(by=<span class="string">&#x27;score&#x27;</span>, ascending=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 水平条形图绘制</span></span><br><span class="line">rf_feature_importance.plot(kind=<span class="string">&#x27;______&#x27;</span>,legend=<span class="literal">False</span>,color = <span class="string">&#x27;deepskyblue&#x27;</span>)</span><br><span class="line"></span><br><span class="line">plt.title(<span class="string">&#x27;随机森林特征重要性&#x27;</span>,fontproperties = font)</span><br><span class="line"></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+
+<div class="article-footer reveal fs14"><section id="license"><div class="header"><span>许可协议</span></div><div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div></section></div>
+
+</article>
+
+<div class="related-wrap reveal" id="read-next"><section class="body"><div class="item" id="prev"></div><div class="item" id="next"><div class="note">较早文章</div><a href="/2023/08/31/%E5%95%86%E5%93%81%E8%AF%84%E8%AE%BA%E6%83%85%E6%84%9F%E5%88%A4%E5%AE%9A/">商品评论情感判定</a></div></section></div>
+
+
+
+
+
+
+
+
+      
+<footer class="page-footer reveal fs12"><hr><div class="text"><p>本站由 <a href="/">@anonymity</a> 使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar">Stellar</a> 主题创建。<br>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+</div></footer>
+
+      <div class='float-panel mobile-only blur' style='display:none'>
+  <button type='button' class='sidebar-toggle mobile' onclick='sidebar.toggle()'>
+    <svg class="icon" style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="15301"><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 2.3 26.8 24.6 47.5 51.6 47.6h416.5v4z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15302"></path><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 1.9 27.7 23.9 49.7 51.6 51.6h416.5z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15303"></path></svg>
+  </button>
+</div>
+
+    </div>
+  </div>
+  <div class='scripts'>
+    <script type="text/javascript">
+  const stellar = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    loadCSS: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    // 从 butterfly 和 volantis 获得灵感
+    loadScript: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      if (src.startsWith('/')){
+        src = stellar.config.root + src.substring(1);
+      }
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    // https://github.com/jerryc127/hexo-theme-butterfly
+    jQuery: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        stellar.loadScript(stellar.plugins.jQuery).then(fn)
+      } else {
+        fn()
+      }
+    }
+  };
+  stellar.version = '1.19.0';
+  stellar.github = 'https://github.com/xaoxuu/hexo-theme-stellar/tree/1.19.0';
+  stellar.config = {
+    date_suffix: {
+      just: '刚刚',
+      min: '分钟前',
+      hour: '小时前',
+      day: '天前',
+      month: '个月前',
+    },
+    root : '/',
+  };
+
+  // required plugins (only load if needs)
+  stellar.plugins = {
+    jQuery: 'https://gcore.jsdelivr.net/npm/jquery@3.6.2/dist/jquery.min.js'
+  };
+
+  if ('local_search') {
+    stellar.search = {};
+    stellar.search.service = 'local_search';
+    if (stellar.search.service == 'local_search') {
+      let service_obj = Object.assign({}, {"field":"all","path":"/search.json","content":true,"codeblock":true,"sort":"-date"});
+      stellar.search[stellar.search.service] = service_obj;
+    }
+  }
+
+  // stellar js
+  stellar.plugins.stellar = Object.assign({"sites":"/js/plugins/sites.js","friends":"/js/plugins/friends.js","ghinfo":"/js/plugins/ghinfo.js","timeline":"/js/plugins/timeline.js","linkcard":"/js/plugins/linkcard.js","fcircle":"/js/plugins/fcircle.js","weibo":"/js/plugins/weibo.js"});
+
+  stellar.plugins.marked = Object.assign("https://cdn.bootcdn.net/ajax/libs/marked/4.0.18/marked.min.js");
+  // optional plugins
+  if ('true' == 'true') {
+    stellar.plugins.lazyload = Object.assign({"enable":true,"js":"https://gcore.jsdelivr.net/npm/vanilla-lazyload@17.8.3/dist/lazyload.min.js","transition":"blur"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.swiper = Object.assign({"enable":true,"css":"https://unpkg.com/swiper@8.4.5/swiper-bundle.min.css","js":"https://unpkg.com/swiper@8.4.5/swiper-bundle.min.js"});
+  }
+  if ('' == 'true') {
+    stellar.plugins.scrollreveal = Object.assign({"enable":null,"js":"https://gcore.jsdelivr.net/npm/scrollreveal@4.0.9/dist/scrollreveal.min.js","distance":"8px","duration":500,"interval":100,"scale":1});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.preload = Object.assign({"enable":true,"service":"flying_pages","instant_page":"https://gcore.jsdelivr.net/gh/volantis-x/cdn-volantis@4.1.2/js/instant_page.js","flying_pages":"https://gcore.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.fancybox = Object.assign({"enable":true,"js":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js","css":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.css","selector":".swiper-slide img"});
+  }
+  if ('false' == 'true') {
+    stellar.plugins.heti = Object.assign({"enable":false,"css":"https://unpkg.com/heti@0.9.2/umd/heti.min.css","js":"https://unpkg.com/heti@0.9.2/umd/heti-addon.min.js"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.copycode = Object.assign({"enable":true,"js":"/js/plugins/copycode.js","default_text":"Copy","success_text":"Copied"});
+  }
+</script>
+
+<!-- required -->
+
+  
+<script src="/js/main.js" async></script>
+
+
+
+<!-- optional -->
+
+
+
+<!-- inject -->
+
+
+  </div>
+</body>
+</html>

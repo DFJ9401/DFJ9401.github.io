@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+
+<head>
+  <meta name="generator" content="Hexo 6.3.0">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.19.0">
+  <meta charset="utf-8">
+  
+
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  <link rel='dns-prefetch' href='https://gcore.jsdelivr.net'>
+  <link rel="preconnect" href="https://gcore.jsdelivr.net" crossorigin>
+  <link rel='dns-prefetch' href='//unpkg.com'>
+
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" content="#f8f8f8">
+  
+  <title>基于健康学习的机器诊断 - S of S of S</title>
+
+  
+    <meta name="description" content="1 数据读取与预处理1.1 数据集简介肝病患数据集包含416名肝病患者记录和167非肝病患者记录，数据集信息如下：    列名 数据类型 含义说明    Age Integer 患者的年龄   Gender String 患者的性别   TB Float 总胆红素   DB Float 直接胆红素   Alkphos Integer 碱性磷酸酶   Sgpt Integer 谷丙转氨酶   Sgo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于健康学习的机器诊断">
+<meta property="og:url" content="https://dfj9401.github.io/2023/09/02/%E5%9F%BA%E4%BA%8E%E5%81%A5%E5%BA%B7%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%9C%BA%E5%99%A8%E8%AF%8A%E6%96%AD/index.html">
+<meta property="og:site_name" content="S of S of S">
+<meta property="og:description" content="1 数据读取与预处理1.1 数据集简介肝病患数据集包含416名肝病患者记录和167非肝病患者记录，数据集信息如下：    列名 数据类型 含义说明    Age Integer 患者的年龄   Gender String 患者的性别   TB Float 总胆红素   DB Float 直接胆红素   Alkphos Integer 碱性磷酸酶   Sgpt Integer 谷丙转氨酶   Sgo">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-09-02T12:03:45.000Z">
+<meta property="article:modified_time" content="2023-09-02T13:39:16.187Z">
+<meta property="article:author" content="lub">
+<meta name="twitter:card" content="summary">
+  
+  
+  
+  
+
+  <!-- feed -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/main.css">
+
+  
+
+  
+
+  
+
+  
+
+
+  
+</head>
+
+<body>
+  
+
+
+
+
+  <div class='l_body' id='start'>
+    <aside class='l_left' layout='post'>
+    
+
+  
+
+<header class="header"><div class="logo-wrap"><a class="title" href="/"><div class="main" ff="title">S of S of S</div><div class="sub normal cap">学习记录</div><div class="sub hover cap" style="opacity:0"> 生活记录</div></a></div>
+
+<nav class="menu dis-select"></nav>
+</header>
+
+
+<div class="widgets">
+<widget class="widget-wrapper search"><div class="widget-body"><div class="search-wrapper" id="search"><form class="search-form"><input type="text" class="search-input" id="search-input" data-filter="/blog/" placeholder="文章搜索"><svg t="1670596976048" class="icon search-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2676" width="200" height="200"><path d="M938.2 832.6L723.8 618.1c-2.5-2.5-5.3-4.4-7.9-6.4 36.2-55.6 57.3-121.8 57.3-193.1C773.3 222.8 614.6 64 418.7 64S64 222.8 64 418.6c0 195.9 158.8 354.6 354.6 354.6 71.3 0 137.5-21.2 193.2-57.4 2 2.7 3.9 5.4 6.3 7.8L832.5 938c14.6 14.6 33.7 21.9 52.8 21.9 19.1 0 38.2-7.3 52.8-21.8 29.2-29.1 29.2-76.4 0.1-105.5M418.7 661.3C284.9 661.3 176 552.4 176 418.6 176 284.9 284.9 176 418.7 176c133.8 0 242.6 108.9 242.6 242.7 0 133.7-108.9 242.6-242.6 242.6" p-id="2677"></path></svg></form><div id="search-result"></div><div class="search-no-result">没有找到内容！</div></div></div></widget>
+
+
+<widget class="widget-wrapper toc single" id="data-toc"><div class="widget-header cap dis-select"><span class="name">基于健康学习的机器诊断</span></div><div class="widget-body fs14"><div class="doc-tree active"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%95%B0%E6%8D%AE%E8%AF%BB%E5%8F%96%E4%B8%8E%E9%A2%84%E5%A4%84%E7%90%86"><span class="toc-text">1 数据读取与预处理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E6%95%B0%E6%8D%AE%E9%9B%86%E7%AE%80%E4%BB%8B"><span class="toc-text">1.1 数据集简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E5%AF%BC%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="toc-text">1.2 导入数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E6%95%B0%E5%AD%97%E7%BC%96%E7%A0%81"><span class="toc-text">1.3 数字编码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-%E7%BC%BA%E5%A4%B1%E5%80%BC%E5%A1%AB%E8%A1%A5"><span class="toc-text">1.4 缺失值填补</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-5-%E6%95%B0%E6%8D%AE%E5%88%97%E6%95%B0%E5%80%BC%E8%BD%AC%E5%8C%96"><span class="toc-text">1.5 数据列数值转化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%95%B0%E6%8D%AE%E7%9B%B8%E5%85%B3%E6%80%A7%E6%8E%A2%E7%B4%A2"><span class="toc-text">2 数据相关性探索</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E5%B9%B4%E9%BE%84%E5%88%86%E5%B8%83%E7%9A%84%E7%9B%B4%E6%96%B9%E5%9B%BE%E3%80%81%E6%80%A7%E5%88%AB%E6%95%B0%E9%87%8F%E7%9A%84%E6%9F%B1%E7%8A%B6%E5%9B%BE"><span class="toc-text">2.1 年龄分布的直方图、性别数量的柱状图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E5%B9%B4%E9%BE%84%E3%80%81%E6%80%A7%E5%88%AB%E4%B8%8E%E6%82%A3%E7%97%85%E7%9A%84%E5%88%86%E5%B8%83%E6%83%85%E5%86%B5"><span class="toc-text">2.2 年龄、性别与患病的分布情况</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E5%90%84%E6%8C%87%E6%A0%87%E9%97%B4%E7%9B%B8%E5%85%B3%E6%80%A7"><span class="toc-text">2.3 各指标间相关性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%9E%84%E5%BB%BA%E5%88%86%E7%B1%BB%E6%A8%A1%E5%9E%8B"><span class="toc-text">3 构建分类模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E6%95%B0%E6%8D%AE%E9%9B%86%E5%88%92%E5%88%86"><span class="toc-text">3.1 数据集划分</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92"><span class="toc-text">3.2 逻辑回归</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E5%86%B3%E7%AD%96%E6%A0%91"><span class="toc-text">3.3 决策树</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E9%9A%8F%E6%9C%BA%E6%A3%AE%E6%9E%97"><span class="toc-text">3.4 随机森林</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-%E4%B8%BB%E6%88%90%E5%88%86%E5%88%86%E6%9E%90"><span class="toc-text">3.5 主成分分析</span></a></li></ol></li></ol></div></div></widget>
+
+
+
+
+</div>
+
+
+    </aside>
+    <div class='l_main'>
+      
+
+      
+
+
+
+<div class="bread-nav fs12"><div id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a><span class="sep"></span><a class="cap breadcrumb" href="/">文章</a></div><div id="post-meta">发布于&nbsp;<time datetime="2023-09-02T12:03:45.000Z">2023-09-02</time></div></div>
+
+<article class='md-text content post'>
+<h1 class="article-title"><span>基于健康学习的机器诊断</span></h1>
+<h2 id="1-数据读取与预处理"><a href="#1-数据读取与预处理" class="headerlink" title="1 数据读取与预处理"></a>1 数据读取与预处理</h2><h3 id="1-1-数据集简介"><a href="#1-1-数据集简介" class="headerlink" title="1.1 数据集简介"></a>1.1 数据集简介</h3><p>肝病患数据集包含416名肝病患者记录和167非肝病患者记录，数据集信息如下：</p>
+<table>
+<thead>
+<tr>
+<th>列名</th>
+<th>数据类型</th>
+<th>含义说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Age</strong></td>
+<td>Integer</td>
+<td>患者的年龄</td>
+</tr>
+<tr>
+<td><strong>Gender</strong></td>
+<td>String</td>
+<td>患者的性别</td>
+</tr>
+<tr>
+<td><strong>TB</strong></td>
+<td>Float</td>
+<td>总胆红素</td>
+</tr>
+<tr>
+<td><strong>DB</strong></td>
+<td>Float</td>
+<td>直接胆红素</td>
+</tr>
+<tr>
+<td><strong>Alkphos</strong></td>
+<td>Integer</td>
+<td>碱性磷酸酶</td>
+</tr>
+<tr>
+<td><strong>Sgpt</strong></td>
+<td>Integer</td>
+<td>谷丙转氨酶</td>
+</tr>
+<tr>
+<td><strong>Sgot</strong></td>
+<td>Integer</td>
+<td>天冬氨酸氨基转移酶</td>
+</tr>
+<tr>
+<td><strong>TP</strong></td>
+<td>Float</td>
+<td>总蛋白</td>
+</tr>
+<tr>
+<td><strong>ALB</strong></td>
+<td>Float</td>
+<td>白蛋白</td>
+</tr>
+<tr>
+<td><strong>A&#x2F;G Ratio</strong></td>
+<td>Float</td>
+<td>白蛋白和球蛋白比率</td>
+</tr>
+<tr>
+<td><strong>label</strong></td>
+<td>Integer</td>
+<td>是否患病(1为患病，2为健康)</td>
+</tr>
+</tbody></table>
+<h3 id="1-2-导入数据"><a href="#1-2-导入数据" class="headerlink" title="1.2 导入数据"></a>1.2 导入数据</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="comment"># 不显示警告</span></span><br><span class="line"><span class="keyword">import</span> warnings</span><br><span class="line">warnings.filterwarnings(<span class="string">&#x27;ignore&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>查看数据集</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data = pd.read_csv(<span class="string">&quot;./dataset/Indian Liver Patient Dataset (ILPD).csv&quot;</span>)</span><br><span class="line">data.head()</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看数据信息</span></span><br><span class="line">data.info()</span><br></pre></td></tr></table></figure>
+<p><code>Gender</code>为唯一的<code>object</code>特征，我们需要提前处理为数值型，方便建立模型。<br>使用<code>.describe()</code>对总体数据进行统计，查看常见的数据的统计学特征。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data.describe(include=<span class="string">&#x27;all&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-3-数字编码"><a href="#1-3-数字编码" class="headerlink" title="1.3 数字编码"></a>1.3 数字编码</h3><p>对<code>Gender</code>进行数字编码。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> LabelEncoder</span><br><span class="line"><span class="comment"># 数字编码</span></span><br><span class="line">le = LabelEncoder()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 数字编码</span></span><br><span class="line">data[<span class="string">&quot;Gender&quot;</span>] = le.fit_transform(data[<span class="string">&quot;Gender&quot;</span>][:])</span><br><span class="line"></span><br><span class="line">data</span><br></pre></td></tr></table></figure>
+<p>女性(Female)被编码为0，男性(Male)被编码为1。</p>
+<h3 id="1-4-缺失值填补"><a href="#1-4-缺失值填补" class="headerlink" title="1.4 缺失值填补"></a>1.4 缺失值填补</h3><p>A&#x2F;G Ratio存在缺失值，我们需要对其进行填补。在这里我们采用均值填补的方法进行填充。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.impute <span class="keyword">import</span> SimpleImputer</span><br><span class="line"></span><br><span class="line"><span class="comment"># 采用均值填补法</span></span><br><span class="line">imp = SimpleImputer(strategy=<span class="string">&quot;mean&quot;</span>)</span><br><span class="line">data[<span class="string">&quot;A/G Ratio&quot;</span>] = imp.fit_transform(data[<span class="string">&quot;A/G Ratio&quot;</span>].to_frame())</span><br><span class="line"></span><br><span class="line">data.describe()</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-5-数据列数值转化"><a href="#1-5-数据列数值转化" class="headerlink" title="1.5 数据列数值转化"></a>1.5 数据列数值转化</h3><p>本数据集的标签列<code>label</code>的值为 {1,2}，将其转化为{−1,1}或者{0,1}。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义label列</span></span><br><span class="line">calculate_col = <span class="string">&quot;label&quot;</span></span><br><span class="line">calculate_value = <span class="number">2</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 将label值从&#123;1，2&#125;，转化为&#123;1，0&#125;并更名为label_cal</span></span><br><span class="line">data[calculate_col + <span class="string">&#x27;_cal&#x27;</span>] = calculate_value - data[calculate_col]</span><br><span class="line"><span class="comment"># 删除label列</span></span><br><span class="line">data = data.drop(labels=<span class="string">&#x27;label&#x27;</span>, axis=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#查看转化后的数据集</span></span><br><span class="line">data</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-数据相关性探索"><a href="#2-数据相关性探索" class="headerlink" title="2 数据相关性探索"></a>2 数据相关性探索</h2><h3 id="2-1-年龄分布的直方图、性别数量的柱状图"><a href="#2-1-年龄分布的直方图、性别数量的柱状图" class="headerlink" title="2.1 年龄分布的直方图、性别数量的柱状图"></a>2.1 年龄分布的直方图、性别数量的柱状图</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line">%matplotlib inline</span><br><span class="line">%config InlineBackend.figure_format = <span class="string">&#x27;svg&#x27;</span></span><br><span class="line">plt.rcParams[<span class="string">&#x27;font.sans-serif&#x27;</span>] = [<span class="string">&#x27;SimHei&#x27;</span>]  <span class="comment"># 用来正常显示中文标签</span></span><br><span class="line">plt.rcParams[<span class="string">&#x27;axes.unicode_minus&#x27;</span>] = <span class="literal">False</span>  <span class="comment"># 用来正常显示负号</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义genders列</span></span><br><span class="line">genders = [<span class="string">&#x27;女性&#x27;</span>, <span class="string">&#x27;男性&#x27;</span>]</span><br><span class="line">fig, [ax1, ax2] = plt.subplots(<span class="number">1</span>, <span class="number">2</span>, figsize=(<span class="number">12</span>, <span class="number">5</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 画出年龄分布直方图</span></span><br><span class="line">sns.histplot(data[<span class="string">&#x27;Age&#x27;</span>], kde=<span class="literal">False</span>, palette=<span class="string">&quot;Set2&quot;</span>, ax=ax1)</span><br><span class="line"><span class="comment"># 画出性别分布柱状图</span></span><br><span class="line">sns.countplot(x=<span class="string">&#x27;Gender&#x27;</span>, data=data, palette=<span class="string">&quot;Set2&quot;</span>, ax=ax2)</span><br><span class="line"></span><br><span class="line">ax1.<span class="built_in">set</span>(xlabel=<span class="string">&#x27;年龄&#x27;</span>, ylabel=<span class="string">&#x27;数量&#x27;</span>)</span><br><span class="line">ax2.<span class="built_in">set</span>(xlabel=<span class="string">&#x27;性别&#x27;</span>, ylabel=<span class="string">&#x27;数量&#x27;</span>)</span><br><span class="line">ax2.set_xticklabels(genders)</span><br></pre></td></tr></table></figure>
+<h3 id="2-2-年龄、性别与患病的分布情况"><a href="#2-2-年龄、性别与患病的分布情况" class="headerlink" title="2.2 年龄、性别与患病的分布情况"></a>2.2 年龄、性别与患病的分布情况</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义两个图像</span></span><br><span class="line">fig, [ax1, ax2] = plt.subplots(<span class="number">1</span>, <span class="number">2</span>, figsize=(<span class="number">12</span>, <span class="number">5</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 绘制年龄箱线图</span></span><br><span class="line">sns.boxplot(x=<span class="string">&#x27;label_cal&#x27;</span>, y=<span class="string">&#x27;Age&#x27;</span>, hue=<span class="string">&#x27;label_cal&#x27;</span>, data=data, palette=<span class="string">&quot;Set2&quot;</span>, ax=ax1)</span><br><span class="line"><span class="comment"># 绘制性别柱状图</span></span><br><span class="line">sns.countplot(x=<span class="string">&#x27;Gender&#x27;</span>, hue=<span class="string">&#x27;label_cal&#x27;</span>, data=data, palette=<span class="string">&quot;Set2&quot;</span>, ax=ax2)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 给图像加标题</span></span><br><span class="line">ax1.set_title(<span class="string">&#x27;年龄与患病情况的分布&#x27;</span>, fontsize=<span class="number">13</span>)</span><br><span class="line">ax2.set_title(<span class="string">&#x27;性别与患病情况的分布&#x27;</span>, fontsize=<span class="number">13</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 给图像添加标签</span></span><br><span class="line">labels = [<span class="string">&#x27;不患病&#x27;</span>, <span class="string">&#x27;患病&#x27;</span>]</span><br><span class="line">ax1.<span class="built_in">set</span>(xlabel=<span class="string">&#x27;是否患病&#x27;</span>, ylabel=<span class="string">&#x27;年龄&#x27;</span>)</span><br><span class="line">ax1.set_xticklabels(labels)</span><br><span class="line">ax1.legend_.remove()</span><br><span class="line">ax2.<span class="built_in">set</span>(xlabel=<span class="string">&#x27;性别&#x27;</span>, ylabel=<span class="string">&#x27;数量&#x27;</span>)</span><br><span class="line">ax2.set_xticklabels(genders)</span><br><span class="line">ax2.legend([<span class="string">&#x27;不患病&#x27;</span>, <span class="string">&#x27;患病&#x27;</span>])</span><br><span class="line"></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-各指标间相关性"><a href="#2-3-各指标间相关性" class="headerlink" title="2.3 各指标间相关性"></a>2.3 各指标间相关性</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">correlation_heatmap</span>(<span class="params">df</span>):</span><br><span class="line">    hm, ax = plt.subplots(figsize=(<span class="number">12</span>, <span class="number">8</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 绘制热力图</span></span><br><span class="line">    hm = sns.heatmap(</span><br><span class="line">        df.corr(),</span><br><span class="line">        cmap=<span class="string">&#x27;Blues&#x27;</span>,</span><br><span class="line">        square=<span class="literal">True</span>,</span><br><span class="line">        cbar_kws=&#123;<span class="string">&#x27;shrink&#x27;</span>: <span class="number">.9</span>&#125;,</span><br><span class="line">        ax=ax,</span><br><span class="line">        annot=<span class="literal">True</span>,</span><br><span class="line">        linewidths=<span class="number">0.1</span>, vmax=<span class="number">1.0</span>, linecolor=<span class="string">&#x27;white&#x27;</span>,</span><br><span class="line">        annot_kws=&#123;<span class="string">&#x27;fontsize&#x27;</span>: <span class="number">12</span>&#125;</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    plt.title(<span class="string">&#x27;连续型对象间的皮尔森相关系数&#x27;</span>, y=<span class="number">1.05</span>, size=<span class="number">15</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删掉Gender与label_cal列</span></span><br><span class="line">df = data.drop([<span class="string">&#x27;Gender&#x27;</span>, <span class="string">&#x27;label_cal&#x27;</span>], axis=<span class="number">1</span>)</span><br><span class="line">correlation_heatmap(df)</span><br></pre></td></tr></table></figure>
+<p>针对两个离散型变量<code>Gender</code>和<code>label_cal</code>，我们使用卡方检验来观测其相关性，使用的方法是<code>sklearn.feature_selection</code>中的<code>chi2</code>方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.feature_selection <span class="keyword">import</span> SelectKBest</span><br><span class="line"><span class="keyword">from</span> sklearn.feature_selection <span class="keyword">import</span> chi2</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义两个新的数据框</span></span><br><span class="line">gender = pd.DataFrame(data[<span class="string">&#x27;Gender&#x27;</span>])</span><br><span class="line">label_cal = pd.DataFrame(data[<span class="string">&#x27;label_cal&#x27;</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用卡方检验</span></span><br><span class="line">model1 = SelectKBest(chi2, k=<span class="number">1</span>) <span class="comment"># 选择k个最佳特征</span></span><br><span class="line">model1.fit_transform(gender, label_cal)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 打印得分</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;性别变量与是否得病之间的得分为：%.4f&#x27;</span> % model1.scores_)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;性别变量与是否得病之间的pvalue为：%.4f&#x27;</span> % model1.pvalues_)</span><br></pre></td></tr></table></figure>
+<p>计算<code>label_cal</code>与其他连续型变量之间的关系，使用的方法为<code>sklearn.feature_selection</code>中的<code>f_classif</code>方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.feature_selection <span class="keyword">import</span> f_classif</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">fdata = pd.DataFrame(data.drop([<span class="string">&#x27;Gender&#x27;</span>, <span class="string">&#x27;label_cal&#x27;</span>], axis=<span class="number">1</span>))<span class="comment"># 删除gender列与label_cal列</span></span><br><span class="line">label_cal = pd.DataFrame(data[<span class="string">&#x27;label_cal&#x27;</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用f_classif计算label_cal与其他连续型变量间的关系</span></span><br><span class="line">F, p_val = f_classif(fdata, label_cal)</span><br><span class="line"><span class="comment"># f分布的0.05分位数</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;各连续型变量的名称：&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(fdata.columns.tolist())</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;各连续型变量与是否得病之间的F值为：&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(F)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;各连续型变量与是否得病之间的pvalue为：&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(p_val)</span><br></pre></td></tr></table></figure>
+<p>从计算得出的P值能看出，除了<code>TP</code>的值为0.398，大于0.05以外，各个连续型变量与<code>label_cal</code>之间具有很高的的相关性。</p>
+<h2 id="3-构建分类模型"><a href="#3-构建分类模型" class="headerlink" title="3 构建分类模型"></a>3 构建分类模型</h2><h3 id="3-1-数据集划分"><a href="#3-1-数据集划分" class="headerlink" title="3.1 数据集划分"></a>3.1 数据集划分</h3><p>我们根据计算出的<code>label_cal</code>来对数据集进行划分。划分比例设置为<code>测试集:训练集 = 20%:80%</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> classification_report</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> confusion_matrix</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> accuracy_score</span><br><span class="line">x = data.drop([<span class="string">&#x27;label_cal&#x27;</span>], axis=<span class="number">1</span>) <span class="comment"># x为删除label_cal的数据集</span></span><br><span class="line">y = data[<span class="string">&#x27;label_cal&#x27;</span>] <span class="comment"># y为label_cal列</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 划分数据集</span></span><br><span class="line">x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=<span class="number">0.2</span>, random_state=<span class="number">2</span>, stratify=data[<span class="string">&#x27;label_cal&#x27;</span>])</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-逻辑回归"><a href="#3-2-逻辑回归" class="headerlink" title="3.2 逻辑回归"></a>3.2 逻辑回归</h3><p>逻辑回归是一种广义线性回归模型，在回归的基础上，使用<code>Logistic</code>函数将连续型的输出映射到（0，1）之间，用来解决分类问题。</p>
+<p>在Python中，使用sklearn_model的<code>LogisticRegression</code>进行分类建模，使用的主要参数有：</p>
+<ul>
+<li><code>penalty</code> ——可设为<code>l1</code>或者<code>l2</code>，代表L1和L2正则化，默认为<code>l2</code>。</li>
+<li><code>class_weight</code> ——<code>class-weight</code>用于指定样本各个类别的权重，主要是为了防止训练集某些类别的样本过多，导致训练的决策树过于偏向这些类别。</li>
+<li><code>random_state</code> ——随机种子，设定为一个常数，保证每次运行的结果都是一样的。</li>
+</ul>
+<p>我们使用这几个参数进行模型的构建，其中，<code>class_weight</code>为我们自己赋予的权重：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> LogisticRegression</span><br><span class="line"></span><br><span class="line"><span class="comment"># 为权重赋值</span></span><br><span class="line">weights = &#123;<span class="number">0</span>: <span class="number">1</span>, <span class="number">1</span>: <span class="number">1.3</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 进行logistic回归</span></span><br><span class="line">lr = LogisticRegression(penalty=<span class="string">&#x27;l2&#x27;</span>, random_state=<span class="number">8</span>, class_weight=weights)</span><br><span class="line">lr.fit(x_train, y_train)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 对y进行预测</span></span><br><span class="line">y_predprb = lr.predict_proba(x_test)[:, <span class="number">1</span>]</span><br><span class="line">y_pred = lr.predict(x_test)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn <span class="keyword">import</span> metrics</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> auc</span><br><span class="line"></span><br><span class="line"><span class="comment"># 计算fpr，tpr及thresholds的值</span></span><br><span class="line">fpr, tpr, thresholds = metrics.roc_curve(y_test, y_predprb)</span><br><span class="line"><span class="comment"># 计算gmean的值</span></span><br><span class="line">gmean = np.sqrt(tpr*(<span class="number">1</span>-fpr))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 计算最大的gmean值对应的thresholds值</span></span><br><span class="line">dictionary = <span class="built_in">dict</span>(<span class="built_in">zip</span>(thresholds,gmean))</span><br><span class="line">max_thresholds = <span class="built_in">max</span>(dictionary, key=dictionary.get)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;最大的GMean值为：%.4f&quot;</span>%(<span class="built_in">max</span>(gmean)))</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;最大的GMean对应的thresholds为：%.4f&quot;</span>%(max_thresholds))</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> roc_auc_score</span><br><span class="line"><span class="comment"># 计算AUC值</span></span><br><span class="line">test_roc_auc = roc_auc_score(y_test, y_predprb)</span><br><span class="line"><span class="built_in">print</span>(test_roc_auc)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 打印模型分类预测报告</span></span><br><span class="line"><span class="built_in">print</span>(classification_report(y_test, y_pred))</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 画出混淆矩阵热力图</span></span><br><span class="line">cm1 = confusion_matrix(y_test, y_pred)</span><br><span class="line">plt.figure(figsize=(<span class="number">8</span>, <span class="number">6</span>))</span><br><span class="line">sns.heatmap(cm1, annot=<span class="literal">True</span>, linewidths=<span class="number">.5</span>, square=<span class="literal">True</span>, cmap=<span class="string">&#x27;Blues&#x27;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&#x27;Actual label&#x27;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&#x27;Predicted label&#x27;</span>)</span><br><span class="line">all_sample_title = <span class="string">&#x27;ROC AUC Score: &#123;0&#125;&#x27;</span>.<span class="built_in">format</span>(<span class="built_in">round</span>(test_roc_auc,<span class="number">2</span>))</span><br><span class="line">plt.title(all_sample_title, size=<span class="number">15</span>)</span><br></pre></td></tr></table></figure>
+<p><code>患病类别(label_cal=1)</code>的<code>召回率(Recall)</code>达到0.93，且<code>精确度(Precision)</code>达到0.71，总体的平均<code>F1_score</code>达到0.45，是一个分类水平一般的模型。</p>
+<h3 id="3-3-决策树"><a href="#3-3-决策树" class="headerlink" title="3.3 决策树"></a>3.3 决策树</h3><p>使用sklearn中的DecisionTreeClassifier算法来训练决策树模型。使用的主要参数有：</p>
+<ul>
+<li><code>max_depth</code>：设置决策树的最大深度。为多次试验后设置的较好值。</li>
+<li><code>class_weight</code>：用于指定样本各个类别的权重，主要是为了防止训练集某些类别的样本过多，导致训练的决策树过于偏向这些类别。设置为<code>balanced</code>时，能够保证样本量少的类别权重较高。</li>
+<li><code>random_state</code> ——随机种子，设定为一个常数，保证每次运行的结果都是一样的。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.tree <span class="keyword">import</span> DecisionTreeClassifier</span><br><span class="line"><span class="keyword">from</span> sklearn <span class="keyword">import</span> tree</span><br><span class="line"></span><br><span class="line"><span class="comment"># 建立决策树模型</span></span><br><span class="line">model = DecisionTreeClassifier(random_state=<span class="number">5</span>, class_weight=weights)</span><br><span class="line">model = model.fit(x_train, y_train)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 对y进行预测</span></span><br><span class="line">y_predict = model.predict(x_test)</span><br><span class="line">y_predprb = model.predict_proba(x_test)[:, <span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 计算AUC值</span></span><br><span class="line">test_roc_auc = roc_auc_score(y_test, y_predprb)</span><br><span class="line"><span class="built_in">print</span>(test_roc_auc)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 打印模型分类预测报告</span></span><br><span class="line"><span class="built_in">print</span>(classification_report(y_test, y_predict))</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制混淆矩阵热力图</span></span><br><span class="line">cm2 = confusion_matrix(y_test, y_predict)</span><br><span class="line">plt.figure(figsize=(<span class="number">9</span>, <span class="number">9</span>))</span><br><span class="line">sns.heatmap(cm2, annot=<span class="literal">True</span>, linewidths=<span class="number">.5</span>, square=<span class="literal">True</span>, cmap=<span class="string">&#x27;Blues&#x27;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&#x27;Actual label&#x27;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&#x27;Predicted label&#x27;</span>)</span><br><span class="line">all_sample_title = <span class="string">&#x27;ROC AUC score: &#123;0&#125;&#x27;</span>.<span class="built_in">format</span>(<span class="built_in">round</span>(test_roc_auc,<span class="number">2</span>))</span><br><span class="line">plt.title(all_sample_title, size=<span class="number">15</span>)</span><br></pre></td></tr></table></figure>
+<p><code>患病类别(label_cal=1)</code>的<code>召回率(Recall)</code>达到0.71，且<code>精确度(Precision)</code>达到0.77，总体的平均<code>F1_score</code>达到0.58，分类水平一般。</p>
+<h3 id="3-4-随机森林"><a href="#3-4-随机森林" class="headerlink" title="3.4 随机森林"></a>3.4 随机森林</h3><p>在Python中，使用sklearn.ensemble的<code>RandomForestClassifier</code>进行分类建模，使用的主要参数有：</p>
+<ul>
+<li><code>n_estimator</code>：训练分类器的数量，默认值为100。</li>
+<li><code>max_depth</code>：每棵树的最大深度，默认为3。</li>
+<li><code>random_state</code>：随机种子，设定为一个常数，保证每次运行的结果都是一样的。</li>
+<li><code>class_weight</code>：用于指定样本各个类别的权重，主要是为了防止训练集某些类别的样本过多，导致训练的决策树过于偏向这些类别。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> RandomForestClassifier</span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> cross_val_score</span><br><span class="line"></span><br><span class="line"><span class="comment"># 建立随机森林模型</span></span><br><span class="line">ran_for = RandomForestClassifier(n_estimators=<span class="number">80</span>, random_state=<span class="number">0</span>, class_weight=weights)</span><br><span class="line">ran_for.fit(x_train, y_train)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 对y进行预测</span></span><br><span class="line">y_pred_ran = ran_for.predict(x_test)</span><br><span class="line">y_predprb = ran_for.predict_proba(x_test)[:, <span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 计算AUC值</span></span><br><span class="line">test_roc_auc = roc_auc_score(y_test, y_predprb)</span><br><span class="line"><span class="built_in">print</span>(test_roc_auc)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 打印模型分类预测报告</span></span><br><span class="line"><span class="built_in">print</span>(classification_report(y_test, y_pred_ran, digits=<span class="number">2</span>))</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制混淆矩阵热力图</span></span><br><span class="line">cm3 = confusion_matrix(y_test, y_pred_ran)</span><br><span class="line">plt.figure(figsize=(<span class="number">9</span>, <span class="number">9</span>))</span><br><span class="line">sns.heatmap(cm3, annot=<span class="literal">True</span>, linewidths=<span class="number">.5</span>, square=<span class="literal">True</span>, cmap=<span class="string">&#x27;Blues&#x27;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&#x27;Actual label&#x27;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&#x27;Predicted label&#x27;</span>)</span><br><span class="line">all_sample_title = <span class="string">&#x27;ROC AUC score: &#123;0&#125;&#x27;</span>.<span class="built_in">format</span>(<span class="built_in">round</span>(test_roc_auc,<span class="number">2</span>))</span><br><span class="line">plt.title(all_sample_title, size=<span class="number">15</span>)</span><br></pre></td></tr></table></figure>
+<p><code>患病类别(label_cal=1)</code>的<code>召回率(Recall)</code>达到0.80，且<code>精确度(Precision)</code>达到0.77，总体的平均<code>F1_score</code>达到0.61。</p>
+<p>可以得到随机森林模型的分类效果高于逻辑回归与决策树。</p>
+<h3 id="3-5-主成分分析"><a href="#3-5-主成分分析" class="headerlink" title="3.5 主成分分析"></a>3.5 主成分分析</h3><p>PCA降维是一种常见的数据降维方法，其目的是在“信息”损失较小的前提下，将高维的数据转换到低维，从而减小计算量。PCA通常用于高维数据集的探索与可视化，还可以用于数据压缩，数据预处理等。<br>主成分分析必须从相同量纲的变量表格开始。由于需要将变量总方差分配给特征根，因此变量必须有相同的物理单位，方差才有意义（方差的单位是变量单位的平方）。主成分分析的变量也可以是无量纲的数据，例如标准化或对数转化后的数据。因此在构建模型之前，我们需要进行数据标准化。常用的标准化方法有<code> min-max 标准化</code>和<code> z-score 标准化</code>等。在本例中，我们直接采用<code> z-score 标准化</code>方法。</p>
+<p>对数据进行标准化处理：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn <span class="keyword">import</span> preprocessing</span><br><span class="line">X = data.iloc[:, :-<span class="number">1</span>] <span class="comment"># 除了label_cal列</span></span><br><span class="line">y = data[<span class="string">&#x27;label_cal&#x27;</span>]</span><br><span class="line"></span><br><span class="line">np.random.seed(<span class="number">123</span>)</span><br><span class="line">perm = np.random.permutation(<span class="built_in">len</span>(X)) <span class="comment"># 将数组随机生成一个新的序列</span></span><br><span class="line">X = X.loc[perm]</span><br><span class="line">y = y[perm]</span><br><span class="line">X = preprocessing.scale(X)<span class="comment"># 进行标准化处理</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.decomposition <span class="keyword">import</span> PCA</span><br><span class="line"><span class="comment"># 使用PCA进行降维</span></span><br><span class="line">pca = PCA(copy=<span class="literal">True</span>, n_components=<span class="number">6</span>, whiten=<span class="literal">False</span>, random_state=<span class="number">1</span>)</span><br><span class="line">X_new = pca.fit_transform(X)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">u&#x27;所保留的6个主成分的方差贡献率为：&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(pca.explained_variance_ratio_)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">u&#x27;排名前2的主成分特征向量为：&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(pca.components_[<span class="number">0</span>:<span class="number">1</span>])</span><br><span class="line"><span class="built_in">print</span>(<span class="string">u&#x27;累计方差贡献率为：&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">sum</span>(pca.explained_variance_ratio_))</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 对数据集进行划分</span></span><br><span class="line">x_train, x_test, y_train, y_test = train_test_split(X_new, y, test_size=<span class="number">0.2</span>, random_state=<span class="number">2</span>, stratify=data[<span class="string">&#x27;label_cal&#x27;</span>])</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 建立随机森林模型</span></span><br><span class="line">ran_for = RandomForestClassifier(n_estimators=<span class="number">80</span>, random_state=<span class="number">0</span>, class_weight=weights)</span><br><span class="line"><span class="comment"># 训练模型</span></span><br><span class="line">ran_for.fit(x_train, y_train)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 对y进行预测</span></span><br><span class="line">y_pred_ran = ran_for.predict(x_test)</span><br><span class="line">y_predprb = ran_for.predict_proba(x_test)[:, <span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 计算AUC值</span></span><br><span class="line">test_roc_auc = roc_auc_score(y_test, y_predprb)</span><br><span class="line"><span class="built_in">print</span>(test_roc_auc)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 打印模型分类预测报告</span></span><br><span class="line"><span class="built_in">print</span>(classification_report(y_test, y_pred_ran, digits=<span class="number">2</span>))</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绘制混淆矩阵热力图</span></span><br><span class="line">cm4 = confusion_matrix(y_test, y_pred_ran)</span><br><span class="line">plt.figure(figsize=(<span class="number">9</span>, <span class="number">9</span>))</span><br><span class="line">sns.heatmap(cm4, annot=<span class="literal">True</span>, linewidths=<span class="number">.5</span>, square=<span class="literal">True</span>, cmap=<span class="string">&#x27;Blues&#x27;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&#x27;Actual label&#x27;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&#x27;Predicted label&#x27;</span>)</span><br><span class="line">all_sample_title = <span class="string">&#x27;ROC AUC score: &#123;0&#125;&#x27;</span>.<span class="built_in">format</span>(<span class="built_in">round</span>(test_roc_auc,<span class="number">2</span>))</span><br><span class="line">plt.title(all_sample_title, size=<span class="number">15</span>)</span><br></pre></td></tr></table></figure>
+<p>降维之后的随机森林模型实现了较为显著的提升，能够实现测试集上<code>患病类别(label_cal=1)</code>的<code>召回率(Recall)</code>达到0.85，且<code>精确度(Precision)</code>达到0.83，总体的平均<code>F1_score</code>达到0.65。</p>
+
+
+
+<div class="article-footer reveal fs14"><section id="license"><div class="header"><span>许可协议</span></div><div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div></section></div>
+
+</article>
+
+<div class="related-wrap reveal" id="read-next"><section class="body"><div class="item" id="prev"><div class="note">较新文章</div><a href="/2023/09/02/%E9%9B%86%E6%88%90%E5%AD%A6%E4%B9%A0/">集成学习尝试</a></div><div class="item" id="next"><div class="note">较早文章</div><a href="/2023/08/31/%E9%9A%8F%E6%9C%BA%E6%A3%AE%E6%9E%97%E5%88%86%E6%9E%90/">随机森林分析</a></div></section></div>
+
+
+
+
+
+
+
+
+      
+<footer class="page-footer reveal fs12"><hr><div class="text"><p>本站由 <a href="/">@anonymity</a> 使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar">Stellar</a> 主题创建。<br>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+</div></footer>
+
+      <div class='float-panel mobile-only blur' style='display:none'>
+  <button type='button' class='sidebar-toggle mobile' onclick='sidebar.toggle()'>
+    <svg class="icon" style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="15301"><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 2.3 26.8 24.6 47.5 51.6 47.6h416.5v4z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15302"></path><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 1.9 27.7 23.9 49.7 51.6 51.6h416.5z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15303"></path></svg>
+  </button>
+</div>
+
+    </div>
+  </div>
+  <div class='scripts'>
+    <script type="text/javascript">
+  const stellar = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    loadCSS: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    // 从 butterfly 和 volantis 获得灵感
+    loadScript: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      if (src.startsWith('/')){
+        src = stellar.config.root + src.substring(1);
+      }
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    // https://github.com/jerryc127/hexo-theme-butterfly
+    jQuery: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        stellar.loadScript(stellar.plugins.jQuery).then(fn)
+      } else {
+        fn()
+      }
+    }
+  };
+  stellar.version = '1.19.0';
+  stellar.github = 'https://github.com/xaoxuu/hexo-theme-stellar/tree/1.19.0';
+  stellar.config = {
+    date_suffix: {
+      just: '刚刚',
+      min: '分钟前',
+      hour: '小时前',
+      day: '天前',
+      month: '个月前',
+    },
+    root : '/',
+  };
+
+  // required plugins (only load if needs)
+  stellar.plugins = {
+    jQuery: 'https://gcore.jsdelivr.net/npm/jquery@3.6.2/dist/jquery.min.js'
+  };
+
+  if ('local_search') {
+    stellar.search = {};
+    stellar.search.service = 'local_search';
+    if (stellar.search.service == 'local_search') {
+      let service_obj = Object.assign({}, {"field":"all","path":"/search.json","content":true,"codeblock":true,"sort":"-date"});
+      stellar.search[stellar.search.service] = service_obj;
+    }
+  }
+
+  // stellar js
+  stellar.plugins.stellar = Object.assign({"sites":"/js/plugins/sites.js","friends":"/js/plugins/friends.js","ghinfo":"/js/plugins/ghinfo.js","timeline":"/js/plugins/timeline.js","linkcard":"/js/plugins/linkcard.js","fcircle":"/js/plugins/fcircle.js","weibo":"/js/plugins/weibo.js"});
+
+  stellar.plugins.marked = Object.assign("https://cdn.bootcdn.net/ajax/libs/marked/4.0.18/marked.min.js");
+  // optional plugins
+  if ('true' == 'true') {
+    stellar.plugins.lazyload = Object.assign({"enable":true,"js":"https://gcore.jsdelivr.net/npm/vanilla-lazyload@17.8.3/dist/lazyload.min.js","transition":"blur"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.swiper = Object.assign({"enable":true,"css":"https://unpkg.com/swiper@8.4.5/swiper-bundle.min.css","js":"https://unpkg.com/swiper@8.4.5/swiper-bundle.min.js"});
+  }
+  if ('' == 'true') {
+    stellar.plugins.scrollreveal = Object.assign({"enable":null,"js":"https://gcore.jsdelivr.net/npm/scrollreveal@4.0.9/dist/scrollreveal.min.js","distance":"8px","duration":500,"interval":100,"scale":1});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.preload = Object.assign({"enable":true,"service":"flying_pages","instant_page":"https://gcore.jsdelivr.net/gh/volantis-x/cdn-volantis@4.1.2/js/instant_page.js","flying_pages":"https://gcore.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.fancybox = Object.assign({"enable":true,"js":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js","css":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.css","selector":".swiper-slide img"});
+  }
+  if ('false' == 'true') {
+    stellar.plugins.heti = Object.assign({"enable":false,"css":"https://unpkg.com/heti@0.9.2/umd/heti.min.css","js":"https://unpkg.com/heti@0.9.2/umd/heti-addon.min.js"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.copycode = Object.assign({"enable":true,"js":"/js/plugins/copycode.js","default_text":"Copy","success_text":"Copied"});
+  }
+</script>
+
+<!-- required -->
+
+  
+<script src="/js/main.js" async></script>
+
+
+
+<!-- optional -->
+
+
+
+<!-- inject -->
+
+
+  </div>
+</body>
+</html>

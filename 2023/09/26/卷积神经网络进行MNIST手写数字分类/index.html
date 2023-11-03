@@ -31,7 +31,7 @@
 <meta property="og:description" content="环境1234import torchimport torch.nn as nnimport torch.optim as optimfrom torchvision import datasets, transforms  torch是PyTorch的核心库，提供了张量操作和其他基本功能。 torch.nn模块包含了构建神经网络模型所需的类和函数。 torch.optim模块包含了各种优化算法的实">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-09-26T05:33:33.000Z">
-<meta property="article:modified_time" content="2023-11-02T02:23:02.709Z">
+<meta property="article:modified_time" content="2023-11-03T02:40:34.883Z">
 <meta property="article:author" content="lub">
 <meta name="twitter:card" content="summary">
   
@@ -148,6 +148,9 @@
 <li><code>self.conv1</code>是第一个卷积层，它接受单通道的输入（in_channels&#x3D;1），输出通道数为16（out_channels&#x3D;16），卷积核的大小为3x3（kernel_size&#x3D;3），步幅为1（stride&#x3D;1），填充为1（padding&#x3D;1）。</li>
 <li><code>self.conv2</code>是第二个卷积层，它接受16通道的输入（in_channels&#x3D;16），输出通道数为32（out_channels&#x3D;32），卷积核的大小为3x3（kernel_size&#x3D;3），步幅为1（stride&#x3D;1），填充为1（padding&#x3D;1）。</li>
 <li><code>self.fc</code>是全连接层，它接受展平后的特征作为输入，输入特征数量为32x7x7（32 * 7 * 7），输出特征数量为10，用于分类任务。</li>
+<li><code>nn.ReLU()</code>一个 ReLU 激活函数对象，通过调用 <code>nn.ReLU()</code> 将 x 作为输入，对x进行非线性激活。</li>
+<li><code>nn.MaxPool2d</code>减少特征。</li>
+<li><code>x.view(x.size(0), -1)</code>将特征图展平为一维向量，其中 <code>x.size(0)</code> 表示批次大小。</li>
 </ul>
 <p>在<code>forward</code>方法中，定义了模型的前向传播过程。输入数据x经过卷积、ReLU激活函数、最大池化等操作，然后通过展平操作将特征展平为一维向量。最后，通过全连接层<code>self.fc</code>将特征映射到10个类别的输出。<br>这个模型的结构包括两个卷积层和一个全连接层，通过卷积层提取图像的特征，然后通过全连接层进行分类。</p>
 <h2 id="训练模型"><a href="#训练模型" class="headerlink" title="训练模型"></a>训练模型</h2><h3 id="创建实例"><a href="#创建实例" class="headerlink" title="创建实例"></a>创建实例</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建一个CNNNet实例</span></span><br><span class="line">model = CNNNet()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义损失函数和优化器</span></span><br><span class="line">criterion = nn.CrossEntropyLoss()</span><br><span class="line">optimizer = optim.Adam(model.parameters(), lr=<span class="number">0.001</span>)</span><br></pre></td></tr></table></figure>
